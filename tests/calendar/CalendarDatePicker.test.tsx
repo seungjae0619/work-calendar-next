@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CalendarDatePicker from "../../components/calendar/CalendarDatePicker";
+import CalendarDatePicker from "../../features/calendar/components/CalendarDatePicker";
 import "@testing-library/jest-dom";
 
 describe("CalendarDatePicker", () => {

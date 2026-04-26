@@ -6,12 +6,20 @@ import interactionPlugin from "@fullcalendar/interaction";
 import KoLocal from "@fullcalendar/core/locales/ko";
 import { useRef } from "react";
 import { isHoliday } from "@hyunbinseo/holidays-kr";
-import CalendarStyles from "./CalendarStyles";
-import CalendarDialog from "./CalendarDialog";
-import CalendarDatePicker from "./CalendarDatePicker";
+import CalendarStyles from "./components/CalendarStyles";
+import CalendarDialog from "../dialog/Dialog";
+import CalendarDatePicker from "./components/CalendarDatePicker";
 import { User } from "@supabase/supabase-js";
-import { renderDayCell, renderEventContent } from "./CalendarRenderer";
-import { useCalendarLogic } from "@/hooks/useCalendarLogic";
+import {
+  renderDayCell,
+  renderEventContent,
+} from "./components/CalendarRenderer";
+import {
+  useCalendarDate,
+  useDialogEvent,
+  useNavigateMonth,
+} from "@/features/calendar/hooks/useCalendarLogic";
+import { DayCellContentArg } from "@fullcalendar/core/index.js";
 
 interface Props {
   isLoggedIn: User | null;
@@ -24,21 +32,37 @@ export default function Calendar({ isLoggedIn, isLoading }: Props) {
     dialogOpen,
     selected,
     selectedEvent,
-    slideDirection,
     displayYear,
     displayMonth,
-    calendarEvents,
 
     setDialogOpen,
     setSelected,
 
-    handleDatePickerSelect,
-    handleTouchStart,
-    handleTouchEnd,
     handleEventClick,
     handleDatesSet,
+  } = useCalendarDate(isLoggedIn);
+
+  const {
+    slideDirection,
+    calendarEvents,
     navigateMonth,
-  } = useCalendarLogic({ isLoggedIn, calendarRef });
+    handleTouchStart,
+    handleTouchEnd,
+  } = useNavigateMonth(calendarRef);
+
+  const { handleDatePickerSelect } = useDialogEvent(calendarRef);
+
+  const getHolidayClassNames = (arg: DayCellContentArg) => {
+    try {
+      const year = arg.date.getFullYear();
+      const month = String(arg.date.getMonth() + 1).padStart(2, "0");
+      const day = String(arg.date.getDate()).padStart(2, "0");
+      const kstDate = new Date(`${year}-${month}-${day}T00:00:00+09:00`);
+      return isHoliday(kstDate) ? ["fc-day-holiday"] : [];
+    } catch {
+      return [];
+    }
+  };
 
   return (
     <>
@@ -101,19 +125,7 @@ export default function Calendar({ isLoggedIn, isLoading }: Props) {
           dayCellContent={renderDayCell}
           eventClick={handleEventClick}
           datesSet={handleDatesSet}
-          dayCellClassNames={(arg) => {
-            try {
-              const year = arg.date.getFullYear();
-              const month = String(arg.date.getMonth() + 1).padStart(2, "0");
-              const day = String(arg.date.getDate()).padStart(2, "0");
-              const kstDate = new Date(
-                `${year}-${month}-${day}T00:00:00+09:00`,
-              );
-              return isHoliday(kstDate) ? ["fc-day-holiday"] : [];
-            } catch {
-              return [];
-            }
-          }}
+          dayCellClassNames={getHolidayClassNames}
         />
         <CalendarDialog
           open={dialogOpen}

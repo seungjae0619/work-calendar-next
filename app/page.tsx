@@ -1,4 +1,4 @@
-import Calendar from "@/components/calendar/Calendar";
+import Calendar from "@/features/calendar/Calendar";
 import Login from "./(auth)/login";
 import { authServerService } from "@/lib/supabase/auth.server";
 

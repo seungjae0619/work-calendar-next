@@ -1,6 +1,6 @@
 "use client";
 
-import LoginDialog from "@/components/auth/LoginDialog";
+import LoginDialog from "@/features/auth/LoginDialog";
 import { Button } from "@/components/ui/button";
 import { authClientService } from "@/lib/supabase/auth.client";
 import { User } from "@supabase/supabase-js";

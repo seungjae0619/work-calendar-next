@@ -26,7 +26,7 @@ const createWrapper = () => {
   return Wrapper;
 };
 
-describe("useEditShift", () => {
+describe("useEditShift 단위 테스트", () => {
   const mockEq = jest.fn();
   const mockUpdate = jest.fn(() => ({ eq: mockEq }));
 

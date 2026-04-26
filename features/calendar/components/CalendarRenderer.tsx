@@ -2,7 +2,7 @@ import {
   DayCellContentArg,
   EventContentArg,
 } from "@fullcalendar/core/index.js";
-import { getWorkTypeStyle } from "./constants";
+import { getWorkTypeStyle } from "../constants";
 
 export const renderDayCell = (info: DayCellContentArg) => {
   return info.dayNumberText.replace("일", "");

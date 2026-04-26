@@ -1,8 +1,8 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useLoginForm } from "@/hooks/useLoginForm";
 
 interface LoginDialogProps {
