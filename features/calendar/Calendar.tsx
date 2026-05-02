@@ -20,6 +20,7 @@ import {
   useDialogEvent,
   useNavigateMonth,
 } from "./hooks/useCalendarLogic";
+import { usePrefetch } from "@/hooks/usePrefetch";
 
 interface Props {
   isLoggedIn: User | null;
@@ -28,6 +29,10 @@ interface Props {
 
 export default function Calendar({ isLoggedIn, isLoading }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
+
+  // 이전, 다음 달 근무표 데이터 prefetching
+  usePrefetch();
+
   const {
     dialogOpen,
     selected,

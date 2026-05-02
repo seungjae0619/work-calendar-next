@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useShift } from "../useShift";
 import { renderHook, waitFor } from "@testing-library/react";
 import { getShift } from "@/lib/api/shift";
-import { get } from "http";
 
 jest.mock("@/lib/supabase/client.ts", () => ({
   supabase: {

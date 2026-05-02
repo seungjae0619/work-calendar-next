@@ -1,10 +1,11 @@
 import { DatesSetArg, EventClickArg } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useShift } from "../../../hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
 import useCalendarStore from "@/store/calendar";
+import { usePrefetch } from "@/hooks/usePrefetch";
 
 interface Props {
   isLoggedIn: User | null;
@@ -28,6 +29,7 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
     displayMonth,
     updateStartDate,
     updateEndDate,
+    updateCurrentDate,
     setDisplayDate,
   } = useCalendarStore();
 
@@ -60,6 +62,7 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
 
     updateStartDate(format(startDate));
     updateEndDate(format(endDate));
+    updateCurrentDate(format(startDate));
   };
 
   return {
