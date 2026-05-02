@@ -13,8 +13,8 @@ type CalendarState = {
 const useCalendarStore = create<CalendarState>((set) => ({
   startDate: "",
   endDate: "",
-  displayYear: new Date().getFullYear(),
-  displayMonth: new Date().getMonth() + 1,
+  displayYear: 0,
+  displayMonth: 0,
   updateStartDate: (startDate) => set(() => ({ startDate: startDate })),
   updateEndDate: (endDate) => set(() => ({ endDate: endDate })),
   setDisplayDate: (year, month) =>

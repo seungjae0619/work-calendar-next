@@ -1,6 +1,6 @@
 import { DatesSetArg, EventClickArg } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useShift } from "../../../hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
@@ -32,6 +32,11 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
   } = useCalendarStore();
 
   const shift = useShift(startDate, endDate);
+
+  useEffect(() => {
+    const now = new Date();
+    setDisplayDate(now.getFullYear(), now.getMonth() + 1);
+  }, []);
 
   const handleEventClick = (eventInfo: EventClickArg) => {
     if (!isLoggedIn) {
@@ -78,9 +83,7 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
 };
 
 export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-    null,
-  );
+  const [translateX, setTranslateX] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showEvents, setShowEvents] = useState(true);
 
@@ -89,33 +92,61 @@ export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
   const shift = useShift(startDate, endDate);
 
   const touchStartX = useRef<number>(0);
+  const isMoving = useRef<boolean>(false);
 
   const navigateMonth = (direction: "left" | "right") => {
     if (isAnimating) return;
     const api = calendarRef.current?.getApi();
 
     setShowEvents(false);
-    setSlideDirection(direction);
     setIsAnimating(true);
 
-    setTimeout(() => {
-      if (direction === "left") api?.next();
-      else api?.prev();
+    requestAnimationFrame(() => {
+      setTranslateX(
+        direction === "left" ? -window.innerWidth : window.innerWidth,
+      );
 
-      setSlideDirection(null);
-      setIsAnimating(false);
-      setShowEvents(true);
-    }, 250);
+      setTimeout(() => {
+        if (direction === "left") api?.next();
+        else api?.prev();
+
+        setTranslateX(0);
+        setIsAnimating(false);
+        setShowEvents(true);
+      }, 250);
+    });
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (isAnimating) return;
     touchStartX.current = e.touches[0].clientX;
+    isMoving.current = true;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMoving.current || isAnimating) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - touchStartX.current;
+
+    setTranslateX(diff);
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) < 50) return;
-    navigateMonth(diff > 0 ? "left" : "right");
+    if (!isMoving.current || isAnimating) return;
+    isMoving.current = false;
+
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    const threshold = 100; // 넘길 기준치 (px)
+
+    if (Math.abs(diff) > threshold) {
+      navigateMonth(diff > 0 ? "right" : "left");
+    } else {
+      setIsAnimating(true);
+      requestAnimationFrame(() => {
+        setTranslateX(0);
+        setTimeout(() => setIsAnimating(false), 250);
+      });
+    }
   };
 
   const calendarEvents = showEvents
@@ -123,11 +154,13 @@ export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
     : [];
 
   return {
-    slideDirection,
+    translateX,
+    isAnimating,
     showEvents,
     calendarEvents,
     navigateMonth,
     handleTouchStart,
+    handleTouchMove,
     handleTouchEnd,
   };
 };

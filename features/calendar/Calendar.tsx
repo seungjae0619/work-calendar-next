@@ -43,10 +43,12 @@ export default function Calendar({ isLoggedIn, isLoading }: Props) {
   } = useCalendarDate(isLoggedIn);
 
   const {
-    slideDirection,
+    translateX,
+    isAnimating,
     calendarEvents,
     navigateMonth,
     handleTouchStart,
+    handleTouchMove,
     handleTouchEnd,
   } = useNavigateMonth(calendarRef);
 
@@ -68,12 +70,16 @@ export default function Calendar({ isLoggedIn, isLoading }: Props) {
     <>
       <CalendarStyles />
       <div
-        className={`w-full h-full md:h-[480px] md:w-[800px] md:mx-auto flex flex-col relative 
-          ${slideDirection === "left" ? "fc-slide-left" : ""}
-          ${slideDirection === "right" ? "fc-slide-right" : ""}
-        `}
+        className="w-full h-full md:w-[800px] md:mx-auto flex flex-col relative"
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateX(${translateX}px)`,
+          transition: isAnimating ? "transform 0.25s ease-out" : "none",
+          willChange: "transform",
+          touchAction: "pan-y",
+        }}
       >
         {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 rounded-lg">
