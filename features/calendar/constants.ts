@@ -6,7 +6,10 @@ export const WORK_TYPES = [
 
 export type WorkTypeId = (typeof WORK_TYPES)[number]["id"];
 
-export const getWorkTypeStyle = (title: string) => ({
-  color: WORK_TYPES.find((b) => b.id === title)?.color || "",
-  textColor: WORK_TYPES.find((b) => b.id === title)?.textColor || "",
-});
+export const getWorkTypeStyle = (title: string) => {
+  const workType = WORK_TYPES.find((b) => b.id === title);
+  return {
+    color: workType?.color ?? "",
+    textColor: workType?.textColor ?? "",
+  };
+};

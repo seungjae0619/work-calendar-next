@@ -3,7 +3,7 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import { usePrefetch } from "../usePrefetch";
 import useCalendarStore from "@/store/calendar";
 import { getMonthRange } from "@/utils/dateHelpers";

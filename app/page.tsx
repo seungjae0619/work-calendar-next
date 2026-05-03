@@ -14,7 +14,7 @@ export default async function Home() {
         </header>
       </div>
       <main className="flex-1 p-2 md:flex-none">
-        <Calendar isLoggedIn={user} isLoading={false} />
+        <Calendar user={user} isLoading={false} />
       </main>
     </div>
   );

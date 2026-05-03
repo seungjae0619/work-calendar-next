@@ -2,7 +2,20 @@ import {
   DayCellContentArg,
   EventContentArg,
 } from "@fullcalendar/core/index.js";
+import { isHoliday } from "@hyunbinseo/holidays-kr";
 import { getWorkTypeStyle } from "../constants";
+
+export const getHolidayClassNames = (arg: DayCellContentArg) => {
+  try {
+    const year = arg.date.getFullYear();
+    const month = String(arg.date.getMonth() + 1).padStart(2, "0");
+    const day = String(arg.date.getDate()).padStart(2, "0");
+    const kstDate = new Date(`${year}-${month}-${day}T00:00:00+09:00`);
+    return isHoliday(kstDate) ? ["fc-day-holiday"] : [];
+  } catch {
+    return [];
+  }
+};
 
 export const renderDayCell = (info: DayCellContentArg) => {
   return info.dayNumberText.replace("일", "");

@@ -12,8 +12,6 @@ export const usePrefetch = () => {
   useEffect(() => {
     if (!currentDatevalue) return;
 
-    console.log("prefetch called");
-
     const currentDate = new Date(currentDatevalue);
 
     const prevRange = getMonthRange(

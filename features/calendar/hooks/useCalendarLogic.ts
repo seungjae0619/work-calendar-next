@@ -1,27 +1,23 @@
 import { DatesSetArg, EventClickArg } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useShift } from "../../../hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
 import useCalendarStore from "@/store/calendar";
-import { usePrefetch } from "@/hooks/usePrefetch";
 
-interface Props {
-  isLoggedIn: User | null;
-  calendarRef: React.RefObject<FullCalendar | null>;
-}
+const SLIDE_ANIMATION_MS = 250;
 
-interface Event {
+interface ShiftEvent {
   work_type: string;
   date: string;
   changed_work_type: string | null;
 }
 
-export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
+export const useCalendarDate = (user: User | null) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState<Event | undefined>();
+  const [selectedEvent, setSelectedEvent] = useState<ShiftEvent | undefined>();
   const {
     startDate,
     endDate,
@@ -36,7 +32,7 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
   const shift = useShift(startDate, endDate);
 
   const handleEventClick = (eventInfo: EventClickArg) => {
-    if (!isLoggedIn) {
+    if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
@@ -56,13 +52,13 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
 
     setDisplayDate(year, month + 1);
 
-    const startDate = new Date(year, month, 2);
-    const endDate = new Date(year, month + 1, 1);
+    const start = new Date(year, month, 2);
+    const end = new Date(year, month + 1, 1);
     const format = (date: Date) => date.toISOString().split("T")[0];
 
-    updateStartDate(format(startDate));
-    updateEndDate(format(endDate));
-    updateCurrentDate(format(startDate));
+    updateStartDate(format(start));
+    updateEndDate(format(end));
+    updateCurrentDate(format(start));
   };
 
   return {
@@ -71,26 +67,24 @@ export const useCalendarDate = (isLoggedIn: Props["isLoggedIn"]) => {
     selectedEvent,
     displayYear,
     displayMonth,
-
     setDialogOpen,
     setSelected,
-
     handleEventClick,
     handleDatesSet,
   };
 };
 
-export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-    null,
-  );
+export const useNavigateMonth = (
+  calendarRef: React.RefObject<FullCalendar | null>,
+) => {
+  const [slideDirection, setSlideDirection] = useState<
+    "left" | "right" | null
+  >(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showEvents, setShowEvents] = useState(true);
 
   const { startDate, endDate, displayYear, displayMonth } = useCalendarStore();
-
   const shift = useShift(startDate, endDate);
-
   const touchStartX = useRef<number>(0);
 
   const navigateMonth = (direction: "left" | "right") => {
@@ -108,7 +102,7 @@ export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
       setSlideDirection(null);
       setIsAnimating(false);
       setShowEvents(true);
-    }, 250);
+    }, SLIDE_ANIMATION_MS);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -127,7 +121,6 @@ export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
 
   return {
     slideDirection,
-    showEvents,
     calendarEvents,
     navigateMonth,
     handleTouchStart,
@@ -135,7 +128,9 @@ export const useNavigateMonth = (calendarRef: Props["calendarRef"]) => {
   };
 };
 
-export const useDialogEvent = (calendarRef: Props["calendarRef"]) => {
+export const useDialogEvent = (
+  calendarRef: React.RefObject<FullCalendar | null>,
+) => {
   const handleDatePickerSelect = (year: number, month: number) => {
     const api = calendarRef.current?.getApi();
     if (!api) return;
@@ -153,7 +148,5 @@ export const useDialogEvent = (calendarRef: Props["calendarRef"]) => {
     }
   };
 
-  return {
-    handleDatePickerSelect,
-  };
+  return { handleDatePickerSelect };
 };
