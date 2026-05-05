@@ -1,38 +1,10 @@
-import { EventClickArg } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
 import { useRef, useState } from "react";
 import { useShift } from "../../../hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
 import useCalendarStore from "@/store/calendar";
-import useUserStore from "@/store/user";
 
 const SLIDE_ANIMATION_MS = 250;
-
-interface ShiftEvent {
-  work_type: string;
-  date: string;
-  changed_work_type: string | null;
-}
-
-export const useCalendarDate = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selected, setSelected] = useState("");
-  const [selectedEvent, setSelectedEvent] = useState<ShiftEvent | undefined>();
-
-  const { displayYear, displayMonth } = useCalendarStore();
-
-  // 날짜 선택 시 다이얼로그 열기
-
-  return {
-    dialogOpen,
-    selected,
-    selectedEvent,
-    displayYear,
-    displayMonth,
-    setDialogOpen,
-    setSelected,
-  };
-};
 
 export const useNavigateMonth = (
   calendarRef: React.RefObject<FullCalendar | null>,

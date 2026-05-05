@@ -44,7 +44,7 @@ const SlideContainer = ({
 }: SlideContainerProps) => {
   return (
     <div
-      className={`w-full h-full md:h-[480px] md:w-[800px] md:mx-auto flex flex-col relative ${
+      className={`w-full h-full md:h-130 md:w-200 md:mx-auto flex flex-col relative ${
         slideDirection ? `fc-slide-${slideDirection}` : ""
       }`}
       onTouchStart={handleTouchStart}
