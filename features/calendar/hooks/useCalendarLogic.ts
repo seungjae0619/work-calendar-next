@@ -1,10 +1,10 @@
-import { DatesSetArg, EventClickArg } from "@fullcalendar/core/index.js";
+import { EventClickArg } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
 import { useRef, useState } from "react";
-import { User } from "@supabase/supabase-js";
 import { useShift } from "../../../hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
 import useCalendarStore from "@/store/calendar";
+import useUserStore from "@/store/user";
 
 const SLIDE_ANIMATION_MS = 250;
 
@@ -14,52 +14,14 @@ interface ShiftEvent {
   changed_work_type: string | null;
 }
 
-export const useCalendarDate = (user: User | null) => {
+export const useCalendarDate = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<ShiftEvent | undefined>();
-  const {
-    startDate,
-    endDate,
-    displayYear,
-    displayMonth,
-    updateStartDate,
-    updateEndDate,
-    updateCurrentDate,
-    setDisplayDate,
-  } = useCalendarStore();
 
-  const shift = useShift(startDate, endDate);
+  const { displayYear, displayMonth } = useCalendarStore();
 
-  const handleEventClick = (eventInfo: EventClickArg) => {
-    if (!user) {
-      alert("로그인이 필요합니다.");
-      return;
-    }
-    const shiftData = shift.find((s) => s.date === eventInfo.event.startStr);
-    setDialogOpen(true);
-    setSelectedEvent({
-      work_type: shiftData?.work_type || "",
-      date: eventInfo.event.startStr,
-      changed_work_type: shiftData?.changed_work_type || null,
-    });
-    setSelected(shiftData?.changed_work_type || "");
-  };
-
-  const handleDatesSet = (info: DatesSetArg) => {
-    const year = info.view.currentStart.getFullYear();
-    const month = info.view.currentStart.getMonth();
-
-    setDisplayDate(year, month + 1);
-
-    const start = new Date(year, month, 2);
-    const end = new Date(year, month + 1, 1);
-    const format = (date: Date) => date.toISOString().split("T")[0];
-
-    updateStartDate(format(start));
-    updateEndDate(format(end));
-    updateCurrentDate(format(start));
-  };
+  // 날짜 선택 시 다이얼로그 열기
 
   return {
     dialogOpen,
@@ -69,17 +31,15 @@ export const useCalendarDate = (user: User | null) => {
     displayMonth,
     setDialogOpen,
     setSelected,
-    handleEventClick,
-    handleDatesSet,
   };
 };
 
 export const useNavigateMonth = (
   calendarRef: React.RefObject<FullCalendar | null>,
 ) => {
-  const [slideDirection, setSlideDirection] = useState<
-    "left" | "right" | null
-  >(null);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
+    null,
+  );
   const [isAnimating, setIsAnimating] = useState(false);
   const [showEvents, setShowEvents] = useState(true);
 

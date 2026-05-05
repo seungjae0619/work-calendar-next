@@ -1,21 +1,15 @@
 "use client";
 
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
 import KoLocal from "@fullcalendar/core/locales/ko";
-import { ReactNode, TouchEvent, useRef } from "react";
+import { ReactNode, TouchEvent, useEffect, useRef } from "react";
 import CalendarStyles from "./components/CalendarStyles";
-import CalendarDialog from "../dialog/Dialog";
 import { User } from "@supabase/supabase-js";
-import {
-  getHolidayClassNames,
-  renderDayCell,
-  renderEventContent,
-} from "./components/CalendarRenderer";
-import { useCalendarDate, useNavigateMonth } from "./hooks/useCalendarLogic";
-import { usePrefetch } from "@/hooks/usePrefetch";
+import { useNavigateMonth } from "./hooks/useCalendarLogic";
+
 import CalendarHeader from "./components/CalendarHeader";
+import ShiftCalendar from "./components/ShiftCalendar";
+import useUserStore from "@/store/user";
 
 type Direction = "left" | "right";
 interface Props {
@@ -25,8 +19,8 @@ interface Props {
 
 interface SlideContainerProps {
   slideDirection: Direction | null;
-  handleTouchStart: (e: TouchEvent<Element>) => void;
-  handleTouchEnd: (e: TouchEvent<Element>) => void;
+  handleTouchStart: (e: TouchEvent<HTMLDivElement>) => void;
+  handleTouchEnd: (e: TouchEvent<HTMLDivElement>) => void;
   children: ReactNode;
 }
 
@@ -64,19 +58,11 @@ const SlideContainer = ({
 export default function Calendar({ user, isLoading }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
 
-  usePrefetch();
+  const { updateUser } = useUserStore();
 
-  const {
-    dialogOpen,
-    selected,
-    selectedEvent,
-    displayYear,
-    displayMonth,
-    setDialogOpen,
-    setSelected,
-    handleEventClick,
-    handleDatesSet,
-  } = useCalendarDate(user);
+  useEffect(() => {
+    updateUser(user);
+  }, [user, updateUser]);
 
   const {
     slideDirection,
@@ -97,32 +83,12 @@ export default function Calendar({ user, isLoading }: Props) {
         <Loading isLoading={isLoading} />
         <CalendarHeader
           calendarRef={calendarRef}
-          displayYear={displayYear}
-          displayMonth={displayMonth}
           navigateMonth={navigateMonth}
         />
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          events={calendarEvents}
-          height="100%"
-          contentHeight="auto"
-          locale={KoLocal}
-          fixedWeekCount={false}
-          ref={calendarRef}
-          headerToolbar={false}
-          eventContent={renderEventContent}
-          dayCellContent={renderDayCell}
-          eventClick={handleEventClick}
-          datesSet={handleDatesSet}
-          dayCellClassNames={getHolidayClassNames}
-        />
-        <CalendarDialog
-          open={dialogOpen}
-          selected={selected}
-          selectedEvent={selectedEvent}
-          onOpenChange={setDialogOpen}
-          setSelected={setSelected}
+        <ShiftCalendar
+          calendarEvents={calendarEvents}
+          KoLocal={KoLocal}
+          calendarRef={calendarRef}
         />
       </SlideContainer>
     </>

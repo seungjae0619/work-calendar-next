@@ -1,14 +1,5 @@
+import { CalendarEvent } from "@/features/calendar/types/calendar";
 import { Shift } from "@/types/shift";
-
-interface CalendarEvent {
-  title: string;
-  start: string;
-  extendedProps: {
-    isChanged: boolean | "" | null;
-    originalType: string;
-    changedType: string | null;
-  };
-}
 
 export const toCalendarEvents = (
   shift: Shift[],
