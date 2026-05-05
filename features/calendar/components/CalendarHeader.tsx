@@ -3,11 +3,10 @@ import { useDialogEvent } from "../hooks/useCalendarLogic";
 import FullCalendar from "@fullcalendar/react";
 import { Direction } from "../types/calendar";
 import CalendarDatePicker from "./CalendarDatePicker";
+import useCalendarStore from "@/store/calendar";
 
 interface CalendarHeaderProps {
   calendarRef: RefObject<FullCalendar | null>;
-  displayYear: number;
-  displayMonth: number;
   navigateMonth: (direction: Direction) => void;
 }
 
@@ -38,11 +37,10 @@ const NavigateButton = ({
 
 export default function CalendarHeader({
   calendarRef,
-  displayYear,
-  displayMonth,
   navigateMonth,
 }: CalendarHeaderProps) {
   const { handleDatePickerSelect } = useDialogEvent(calendarRef);
+  const { displayYear, displayMonth } = useCalendarStore();
 
   const handleTodayClick = () => {
     calendarRef.current?.getApi().today();
