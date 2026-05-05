@@ -35,8 +35,6 @@ describe("CalendarHeader", () => {
     render(
       <CalendarHeader
         calendarRef={fullCalendarRef}
-        displayYear={2026}
-        displayMonth={5}
         navigateMonth={mockNavigateMonth}
       />,
     );
@@ -54,8 +52,6 @@ describe("CalendarHeader", () => {
     render(
       <CalendarHeader
         calendarRef={fullCalendarRef}
-        displayYear={2026}
-        displayMonth={5}
         navigateMonth={mockNavigateMonth}
       />,
     );
@@ -71,8 +67,6 @@ describe("CalendarHeader", () => {
     render(
       <CalendarHeader
         calendarRef={fullCalendarRef}
-        displayYear={2026}
-        displayMonth={5}
         navigateMonth={mockNavigateMonth}
       />,
     );
