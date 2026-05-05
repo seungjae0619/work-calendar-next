@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import CalendarHeader from "../CalendarHeader";
 import FullCalendar from "@fullcalendar/react";
+import "@testing-library/jest-dom";
 
 jest.mock("../../hooks/useCalendarLogic", () => ({
   useDialogEvent: jest.fn(() => ({
@@ -28,6 +29,25 @@ describe("CalendarHeader", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it("오늘 버튼이 제대로 렌더링 된다", () => {
+    render(
+      <CalendarHeader
+        calendarRef={fullCalendarRef}
+        displayYear={2026}
+        displayMonth={5}
+        navigateMonth={mockNavigateMonth}
+      />,
+    );
+
+    screen.debug();
+
+    expect(
+      screen.getByRole("button", {
+        name: /오늘/,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("이전/다음 버튼 클릭 시 다음 달로 넘어간다", () => {
