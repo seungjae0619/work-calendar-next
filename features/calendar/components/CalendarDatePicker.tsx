@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface Props {
   year: number;
@@ -27,18 +27,21 @@ export default function CalendarDatePicker({ year, month, onSelect }: Props) {
   const [open, setOpen] = useState(false);
   const [pickerYear, setPickerYear] = useState(year);
 
-  useEffect(() => {
+  const handleToggle = () => {
     setPickerYear(year);
-  }, [year]);
+    setOpen((v) => !v);
+  };
+
+  const handleMonthClick = (i: number) => {
+    onSelect(pickerYear, i + 1);
+    setOpen(false);
+  };
 
   return (
     <div className="relative flex items-center justify-center">
       <button
         className="text-base font-semibold text-gray-800 tracking-wide hover:text-gray-500 transition-colors"
-        onClick={() => {
-          setPickerYear(year);
-          setOpen((v) => !v);
-        }}
+        onClick={handleToggle}
       >
         {year}년 {month}월 ▾
       </button>
@@ -77,10 +80,7 @@ export default function CalendarDatePicker({ year, month, onSelect }: Props) {
                           ? "bg-gray-900 text-white"
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
-                    onClick={() => {
-                      onSelect(pickerYear, i + 1);
-                      setOpen(false);
-                    }}
+                    onClick={() => handleMonthClick(i)}
                   >
                     {label}
                   </button>

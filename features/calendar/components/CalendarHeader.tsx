@@ -10,24 +10,17 @@ interface CalendarHeaderProps {
   navigateMonth: (direction: Direction) => void;
 }
 
-interface NavigateButtonProps extends Pick<
-  CalendarHeaderProps,
-  "navigateMonth"
-> {
-  direction: Direction;
+interface NavigateButtonProps {
+  onClick: () => void;
   children: ReactNode;
 }
 
-const NavigateButton = ({
-  direction,
-  navigateMonth,
-  children,
-}: NavigateButtonProps) => {
+const NavigateButton = ({ onClick, children }: NavigateButtonProps) => {
   return (
     <>
       <button
         className="text-gray-400 hover:text-gray-700 text-xl px-2"
-        onClick={() => navigateMonth(direction)}
+        onClick={onClick}
       >
         {children}
       </button>
@@ -45,11 +38,10 @@ export default function CalendarHeader({
   const handleTodayClick = () => {
     calendarRef.current?.getApi().today();
   };
+
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <NavigateButton direction="right" navigateMonth={navigateMonth}>
-        ‹
-      </NavigateButton>
+      <NavigateButton onClick={() => navigateMonth("right")}>‹</NavigateButton>
 
       <CalendarDatePicker
         year={displayYear}
@@ -63,9 +55,7 @@ export default function CalendarHeader({
         >
           오늘
         </button>
-        <NavigateButton direction="left" navigateMonth={navigateMonth}>
-          ›
-        </NavigateButton>
+        <NavigateButton onClick={() => navigateMonth("left")}>›</NavigateButton>
       </div>
     </div>
   );
