@@ -28,7 +28,7 @@ export const useNavigateMonth = (
     setIsAnimating(true);
 
     setTimeout(() => {
-      if (direction === "left") api?.next();
+      if (direction === "right") api?.next();
       else api?.prev();
 
       setSlideDirection(null);
@@ -44,7 +44,7 @@ export const useNavigateMonth = (
   const handleTouchEnd = (e: React.TouchEvent) => {
     const diff = touchStartX.current - e.changedTouches[0].clientX;
     if (Math.abs(diff) < 50) return;
-    navigateMonth(diff > 0 ? "left" : "right");
+    navigateMonth(diff > 0 ? "right" : "left");
   };
 
   const calendarEvents = showEvents

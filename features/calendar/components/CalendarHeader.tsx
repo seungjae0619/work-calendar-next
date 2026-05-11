@@ -1,4 +1,4 @@
-import { ReactNode, RefObject } from "react";
+import { ButtonHTMLAttributes, ReactNode, RefObject } from "react";
 import { useDialogEvent } from "../hooks/useCalendarLogic";
 import FullCalendar from "@fullcalendar/react";
 import { Direction } from "../types/calendar";
@@ -10,21 +10,18 @@ interface CalendarHeaderProps {
   navigateMonth: (direction: Direction) => void;
 }
 
-interface NavigateButtonProps {
-  onClick: () => void;
+interface NavigateButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
 const NavigateButton = ({ onClick, children }: NavigateButtonProps) => {
   return (
-    <>
-      <button
-        className="text-gray-400 hover:text-gray-700 text-xl px-2"
-        onClick={onClick}
-      >
-        {children}
-      </button>
-    </>
+    <button
+      className="text-gray-400 hover:text-gray-700 text-xl px-2"
+      onClick={onClick}
+    >
+      {children}
+    </button>
   );
 };
 
@@ -41,7 +38,7 @@ export default function CalendarHeader({
 
   return (
     <div className="flex items-center justify-between px-4 py-3">
-      <NavigateButton onClick={() => navigateMonth("right")}>‹</NavigateButton>
+      <NavigateButton onClick={() => navigateMonth("left")}>‹</NavigateButton>
 
       <CalendarDatePicker
         year={displayYear}
@@ -55,7 +52,9 @@ export default function CalendarHeader({
         >
           오늘
         </button>
-        <NavigateButton onClick={() => navigateMonth("left")}>›</NavigateButton>
+        <NavigateButton onClick={() => navigateMonth("right")}>
+          ›
+        </NavigateButton>
       </div>
     </div>
   );

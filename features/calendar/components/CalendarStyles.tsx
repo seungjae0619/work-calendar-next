@@ -56,11 +56,11 @@ export default function CalendarStyles() {
       .fc-slide-right {
         animation: slideRight 0.25s ease-in-out;
       }
-      @keyframes slideLeft {
+      @keyframes slideRight {
         0%   { transform: translateX(0);     opacity: 1; }
         100% { transform: translateX(-60px); opacity: 0; }
       }
-      @keyframes slideRight {
+      @keyframes slideLeft {
         0%   { transform: translateX(0);    opacity: 1; }
         100% { transform: translateX(60px); opacity: 0; }
       }
