@@ -1,8 +1,35 @@
 @import "tailwindcss";
+@import "./calendar.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --white: hsl(210 40% 98%);
+  --black: #121212;
+
+  --background: white;
+  --foreground: var(--black);
+
+  --calendar-bg: white;
+  --calendar-border: #ececec;
+  --calendar-text: #333333;
+  --calendar-muted-bg: #fafafa;
+  --calendar-text-opacity: 0.3;
+
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+}
+
+.dark {
+  --background: var(--black);
+  --foreground: var(--white);
+
+  --calendar-bg: black;
+  --calendar-border: #27272a;
+  --calendar-text: #e5e7eb;
+  --calendar-muted-bg: #18181b;
+  --calendar-text-opacity: 0.6;
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
 }
 
 @theme {
@@ -11,13 +38,6 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  } 
-} */
 
 body {
   background: var(--background);

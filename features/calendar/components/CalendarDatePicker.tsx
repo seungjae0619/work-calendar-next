@@ -40,7 +40,7 @@ export default function CalendarDatePicker({ year, month, onSelect }: Props) {
   return (
     <div className="relative flex items-center justify-center">
       <button
-        className="text-base font-semibold text-gray-800 tracking-wide hover:text-gray-500 transition-colors"
+        className="text-base font-semibold tracking-wide hover:text-gray-300 transition-colors"
         onClick={handleToggle}
       >
         {year}년 {month}월 ▾
@@ -61,7 +61,7 @@ export default function CalendarDatePicker({ year, month, onSelect }: Props) {
                 {pickerYear}년
               </span>
               <button
-                className="text-gray-400 hover:text-gray-700 px-2 text-lg"
+                className="text-gray-400 hover:text-gray-700 px-2 text-lg "
                 onClick={() => setPickerYear((y) => y + 1)}
               >
                 ›

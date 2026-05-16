@@ -3,13 +3,13 @@
 import FullCalendar from "@fullcalendar/react";
 import KoLocal from "@fullcalendar/core/locales/ko";
 import { ReactNode, TouchEvent, useEffect, useRef } from "react";
-import CalendarStyles from "./components/CalendarStyles";
 import { User } from "@supabase/supabase-js";
 import { useNavigateMonth } from "./hooks/useCalendarLogic";
-
+import { isHoliday } from "@hyunbinseo/holidays-kr";
 import CalendarHeader from "./components/CalendarHeader";
 import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
+import useCalendarStore from "@/store/calendar";
 
 type Direction = "left" | "right";
 interface Props {
@@ -57,7 +57,7 @@ const SlideContainer = ({
 
 export default function Calendar({ user, isLoading }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
-
+  const displayMonth = useCalendarStore((state) => state.displayMonth);
   const { updateUser } = useUserStore();
 
   useEffect(() => {
@@ -72,9 +72,35 @@ export default function Calendar({ user, isLoading }: Props) {
     handleTouchEnd,
   } = useNavigateMonth(calendarRef);
 
+  let count = 0;
+
+  calendarEvents.forEach((item) => {
+    const date = new Date(item.start);
+
+    if (isHoliday(date)) {
+      count++;
+    }
+  });
+
+  const countWeekend = (startDate: string, endDate: string) => {
+    let count = 0;
+    const current = new Date(startDate);
+
+    while (current < new Date(endDate)) {
+      if (current.getDay() === 0 || current.getDay() === 6) {
+        count++;
+      }
+
+      current.setDate(current.getDate() + 1);
+    }
+
+    return count;
+  };
+
+  const totalWeekends = countWeekend("2026-05-01", "2026-05-30");
+
   return (
     <>
-      <CalendarStyles />
       <SlideContainer
         slideDirection={slideDirection}
         handleTouchStart={handleTouchStart}
@@ -85,6 +111,13 @@ export default function Calendar({ user, isLoading }: Props) {
           calendarRef={calendarRef}
           navigateMonth={navigateMonth}
         />
+        {user && (
+          <div className="flex pb-1 justify-end">
+            <p className="text-sm font-bold dark:text-white">
+              {displayMonth}월 대체 휴무 수: {count + totalWeekends}
+            </p>
+          </div>
+        )}
         <ShiftCalendar
           calendarEvents={calendarEvents}
           KoLocal={KoLocal}

@@ -16,10 +16,7 @@ interface NavigateButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const NavigateButton = ({ onClick, children }: NavigateButtonProps) => {
   return (
-    <button
-      className="text-gray-400 hover:text-gray-700 text-xl px-2"
-      onClick={onClick}
-    >
+    <button className="text-xl px-2 hover:text-gray-400" onClick={onClick}>
       {children}
     </button>
   );
@@ -47,7 +44,7 @@ export default function CalendarHeader({
       />
       <div className="flex items-center gap-1">
         <button
-          className="text-xs text-gray-500 border border-gray-200 rounded-md px-2 py-1 hover:bg-gray-100 transition-colors"
+          className="text-xs border border-gray-200 rounded-md px-2 py-1 hover:bg-gray-500 transition-colors"
           onClick={handleTodayClick}
         >
           오늘
