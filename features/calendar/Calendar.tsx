@@ -59,6 +59,7 @@ export default function Calendar({ user, isLoading }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
   const displayMonth = useCalendarStore((state) => state.displayMonth);
   const { updateUser } = useUserStore();
+  const { startDate, endDate } = useCalendarStore();
 
   useEffect(() => {
     updateUser(user);
@@ -72,32 +73,32 @@ export default function Calendar({ user, isLoading }: Props) {
     handleTouchEnd,
   } = useNavigateMonth(calendarRef);
 
-  let count = 0;
+  let holidayCount = 0;
 
   calendarEvents.forEach((item) => {
     const date = new Date(item.start);
 
     if (isHoliday(date)) {
-      count++;
+      holidayCount++;
     }
   });
 
   const countWeekend = (startDate: string, endDate: string) => {
-    let count = 0;
+    let weekendCount = 0;
     const current = new Date(startDate);
 
     while (current < new Date(endDate)) {
       if (current.getDay() === 0 || current.getDay() === 6) {
-        count++;
+        weekendCount++;
       }
 
       current.setDate(current.getDate() + 1);
     }
 
-    return count;
+    return weekendCount;
   };
 
-  const totalWeekends = countWeekend("2026-05-01", "2026-05-30");
+  const totalWeekends = countWeekend(startDate, endDate) + holidayCount;
 
   return (
     <>
@@ -113,8 +114,8 @@ export default function Calendar({ user, isLoading }: Props) {
         />
         {user && (
           <div className="flex pb-1 justify-end">
-            <p className="text-sm font-bold dark:text-white">
-              {displayMonth}월 대체 휴무 수: {count + totalWeekends}
+            <p className="text-sm font-bold">
+              {displayMonth}월 대체 휴무 수: {totalWeekends}
             </p>
           </div>
         )}
