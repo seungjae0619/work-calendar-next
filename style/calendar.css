@@ -98,6 +98,11 @@
   animation: slideRight 0.25s ease-in-out;
 }
 
+@media (max-width: 700px) {
+  .fc .fc-daygrid-day-number {
+    font-size: 11px;
+  }
+}
 @keyframes slideRight {
   0% {
     transform: translateX(0);
