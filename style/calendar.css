@@ -24,6 +24,9 @@
 .fc .fc-button:hover {
   background: #f5f5f5 !important;
 }
+.fc .fc-scrollgrid {
+  border-color: var(--calendar-border);
+}
 .fc .fc-col-header-cell {
   padding: 8px 0;
   background: var(--calendar-bg);
@@ -62,7 +65,7 @@
   color: #e53935 !important;
 }
 .fc .fc-day-today {
-  background: #fffde7 !important;
+  background: var(--calendar-today-bg) !important;
 }
 .fc .fc-day-today .fc-daygrid-day-number {
   font-weight: 700;

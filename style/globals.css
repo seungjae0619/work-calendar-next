@@ -13,6 +13,7 @@
   --calendar-text: #333333;
   --calendar-muted-bg: #fafafa;
   --calendar-text-opacity: 0.3;
+  --calendar-today-bg: #fffde7;
 
   --primary: 222.2 47.4% 11.2%;
   --primary-foreground: 210 40% 98%;
@@ -27,6 +28,7 @@
   --calendar-text: #e5e7eb;
   --calendar-muted-bg: #18181b;
   --calendar-text-opacity: 0.6;
+  --calendar-today-bg: none;
 
   --primary: 210 40% 98%;
   --primary-foreground: 222.2 47.4% 11.2%;

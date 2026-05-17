@@ -17,7 +17,6 @@ import useCalendarStore from "@/store/calendar";
 import useUserStore from "@/store/user";
 import { useShift } from "@/hooks/useShift";
 import CalendarDialog from "@/features/dialog/Dialog";
-import "@/style/calendar.css";
 
 interface ShiftCalendarProps {
   calendarEvents: CalendarEvent[];
