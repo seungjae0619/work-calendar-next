@@ -9,7 +9,7 @@
   --foreground: var(--black);
 
   --calendar-bg: white;
-  --calendar-border: #ececec;
+  --calendar-border: #f1f5f9;
   --calendar-text: #333333;
   --calendar-muted-bg: #fafafa;
   --calendar-text-opacity: 0.3;
@@ -24,7 +24,7 @@
   --foreground: var(--white);
 
   --calendar-bg: black;
-  --calendar-border: #27272a;
+  --calendar-border: #3f3f46;
   --calendar-text: #e5e7eb;
   --calendar-muted-bg: #18181b;
   --calendar-text-opacity: 0.6;

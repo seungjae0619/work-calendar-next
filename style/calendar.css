@@ -25,12 +25,12 @@
   background: #f5f5f5 !important;
 }
 .fc .fc-scrollgrid {
-  border-color: var(--calendar-border);
+  border-color: var(--calendar-border) !important;
 }
 .fc .fc-col-header-cell {
   padding: 8px 0;
   background: var(--calendar-bg);
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid var(--calendar-border);
 }
 
 .fc .fc-col-header-cell-cushion {
@@ -48,11 +48,12 @@
   color: #1e88e5;
 }
 .fc .fc-daygrid-day {
-  border-color: #f0f0f0 !important;
+  border-color: var(--calendar-border) !important;
 }
 
 .fc .fc-daygrid-day-number {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
+  font-weight: 500;
   padding: 6px 8px;
 }
 .fc .fc-day-sun .fc-daygrid-day-number {
@@ -66,6 +67,7 @@
 }
 .fc .fc-day-today {
   background: var(--calendar-today-bg) !important;
+  border: 1px solid;
 }
 .fc .fc-day-today .fc-daygrid-day-number {
   font-weight: 700;
@@ -75,15 +77,16 @@
   opacity: var(--calendar-text-opacity);
 }
 
+.fc-theme-standard th {
+  border-color: var(--calendar-border) !important;
+}
+
 .fc .fc-daygrid-event {
   background: transparent !important;
   border: none !important;
 }
-.fc .fc-scrollgrid {
-  border-color: #ececec !important;
-}
 .fc .fc-scrollgrid-section > td {
-  border-color: #ececec !important;
+  border-color: var(--calendar-border) !important;
 }
 .fc-slide-left {
   animation: slideLeft 0.25s ease-in-out;
