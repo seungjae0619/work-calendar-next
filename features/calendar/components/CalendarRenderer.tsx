@@ -26,8 +26,8 @@ export const renderDayCell = (info: DayCellContentArg) => {
     <div className="flex justify-between items-center gap-1">
       <span>{info.dayNumberText.replace("일", "")}</span>
       {holidayName ? (
-        <span className="text-[8px] md:text-[10px]">
-          {truncateText(holidayName)}
+        <span className="block text-[8px] max-w-6.5 sm:max-w-12 md:text-[10px] truncate">
+          {holidayName}
         </span>
       ) : (
         ""
