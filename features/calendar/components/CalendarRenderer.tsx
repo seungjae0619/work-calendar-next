@@ -2,8 +2,9 @@ import {
   DayCellContentArg,
   EventContentArg,
 } from "@fullcalendar/core/index.js";
-import { isHoliday } from "@hyunbinseo/holidays-kr";
+import { getHolidayNames, isHoliday } from "@hyunbinseo/holidays-kr";
 import { getWorkTypeStyle } from "../constants";
+import { truncateText } from "../utils/textFormat";
 
 export const getHolidayClassNames = (arg: DayCellContentArg) => {
   try {
@@ -18,7 +19,19 @@ export const getHolidayClassNames = (arg: DayCellContentArg) => {
 };
 
 export const renderDayCell = (info: DayCellContentArg) => {
-  return info.dayNumberText.replace("일", "");
+  const holidayNames = getHolidayNames(info.date);
+  const holidayName = holidayNames?.[0];
+
+  return (
+    <div className="flex justify-between items-center gap-1">
+      <span>{info.dayNumberText.replace("일", "")}</span>
+      {holidayName ? (
+        <span className="text-[10px]">{truncateText(holidayName)}</span>
+      ) : (
+        ""
+      )}
+    </div>
+  );
 };
 
 export const renderEventContent = (eventInfo: EventContentArg) => {

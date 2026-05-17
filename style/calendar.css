@@ -50,7 +50,10 @@
 .fc .fc-daygrid-day {
   border-color: var(--calendar-border) !important;
 }
-
+.fc .fc-daygrid-day-top {
+  display: flex;
+  flex-direction: row;
+}
 .fc .fc-daygrid-day-number {
   font-size: 0.78rem;
   font-weight: 500;
