@@ -1,7 +1,7 @@
 import Calendar from "@/features/calendar/Calendar";
 import Login from "./(auth)/login";
 import { authServerService } from "@/lib/supabase/auth.server";
-import { ThemeChanger } from "@/utils/ThemeChanger";
+import { ThemeChanger } from "@/components/ThemeChanger";
 
 export default async function Home() {
   const { user } = await authServerService.getUser();
