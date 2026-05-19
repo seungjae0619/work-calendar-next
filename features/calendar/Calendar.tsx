@@ -51,7 +51,10 @@ const SlideContainer = ({
           slideDirection === "left" ? 60 : slideDirection === "right" ? -60 : 0,
         opacity: slideDirection ? 0 : 1,
       }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      transition={{
+        duration: slideDirection ? 0.25 : 0,
+        ease: "easeOut",
+      }}
       className="w-full h-full md:h-130 md:w-200 md:mx-auto flex flex-col relative"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
