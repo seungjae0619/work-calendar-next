@@ -10,6 +10,7 @@ import CalendarHeader from "./components/CalendarHeader";
 import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
 import useCalendarStore from "@/store/calendar";
+import { motion } from "framer-motion";
 
 type Direction = "left" | "right";
 interface Props {
@@ -43,15 +44,20 @@ const SlideContainer = ({
   children,
 }: SlideContainerProps) => {
   return (
-    <div
-      className={`w-full h-full md:h-130 md:w-200 md:mx-auto flex flex-col relative ${
-        slideDirection ? `fc-slide-${slideDirection}` : ""
-      }`}
+    <motion.div
+      initial={false}
+      animate={{
+        x:
+          slideDirection === "left" ? 60 : slideDirection === "right" ? -60 : 0,
+        opacity: slideDirection ? 0 : 1,
+      }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="w-full h-full md:h-130 md:w-200 md:mx-auto flex flex-col relative"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {children}
-    </div>
+    </motion.div>
   );
 };
 

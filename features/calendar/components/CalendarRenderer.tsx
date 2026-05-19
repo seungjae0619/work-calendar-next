@@ -4,7 +4,6 @@ import {
 } from "@fullcalendar/core/index.js";
 import { getHolidayNames, isHoliday } from "@hyunbinseo/holidays-kr";
 import { getWorkTypeStyle } from "../constants";
-import { truncateText } from "../utils/textFormat";
 
 export const getHolidayClassNames = (arg: DayCellContentArg) => {
   try {
