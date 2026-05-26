@@ -52,13 +52,14 @@ export default function LoginDialog({
     onOpenChange(false);
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleLoginInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.type === "email") {
       setEmail(e.target.value);
     }
     if (e.target.type === "password") {
       setPassword(e.target.value);
     }
+
     setError(false);
   };
 
@@ -81,7 +82,7 @@ export default function LoginDialog({
           isLoading={isLoading}
           onSubmit={onSubmit}
           handleClick={handleClick}
-          handleChange={handleChange}
+          handleChange={handleLoginInputChange}
         />
       </DialogContent>
     </Dialog>

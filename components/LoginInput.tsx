@@ -40,12 +40,10 @@ export default function LoginInput({
           className="px-3 py-2 bg-gray-600 text-white border border-gray-400 rounded placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
-        {error ? (
+        {error && (
           <p className="text-red-400 font-bold">
             이메일 또는 비밀번호가 틀렸습니다.
           </p>
-        ) : (
-          ""
         )}
 
         <div className="flex justify-end gap-2">
