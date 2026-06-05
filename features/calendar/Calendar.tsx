@@ -87,6 +87,8 @@ export default function Calendar({ user, isLoading }: Props) {
   calendarEvents.forEach((item) => {
     const date = new Date(item.start);
 
+    if (date.getFullYear() > 2026) return;
+
     if (isHoliday(date)) {
       holidayCount++;
     }

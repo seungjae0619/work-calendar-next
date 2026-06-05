@@ -18,8 +18,13 @@ export const getHolidayClassNames = (arg: DayCellContentArg) => {
 };
 
 export const renderDayCell = (info: DayCellContentArg) => {
-  const holidayNames = getHolidayNames(info.date);
-  const holidayName = holidayNames?.[0];
+  const holidayNames: { holiday: readonly string[] | null } = { holiday: [] };
+
+  if (info.date.getFullYear() < 2027) {
+    holidayNames.holiday = getHolidayNames(info.date);
+  }
+
+  const holidayName = holidayNames.holiday?.[0];
 
   return (
     <div className="flex justify-between items-center gap-1">
