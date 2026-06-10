@@ -11,8 +11,6 @@ export function useShift(startDate: string, endDate: string) {
     queryFn: () => getShift(startDate, endDate),
   });
 
-  PrefetchShift();
-
   return shift;
 }
 

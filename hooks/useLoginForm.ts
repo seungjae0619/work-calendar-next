@@ -32,11 +32,11 @@ export function useLoginForm(
 
   return {
     email,
-    setEmail,
     password,
-    setPassword,
     isLoading,
     error,
+    setEmail,
+    setPassword,
     setError,
     handleSubmit,
     reset,
