@@ -6,7 +6,6 @@ export async function getShift(startDate: string, endDate: string) {
     .select("*")
     .gte("date", startDate)
     .lte("date", endDate);
-  console.log("🚀 ~ getShift ~ data:", data);
 
   if (error) throw error;
   return data ?? [];

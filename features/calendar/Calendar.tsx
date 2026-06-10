@@ -11,6 +11,7 @@ import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
 import useCalendarStore from "@/store/calendar";
 import { motion } from "framer-motion";
+import { CalendarEvent } from "./types/calendar";
 
 type Direction = "left" | "right";
 interface Props {
@@ -64,11 +65,27 @@ const SlideContainer = ({
   );
 };
 
+const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
+  let substituteHolidayCount = 0;
+
+  calendarEvents.forEach((item) => {
+    const date = new Date(item.start);
+
+    // kr-holidays 라이브러리가 2027년 공휴일이 아직 없어서 에러 방지를 위한 if문
+    if (date.getFullYear() > 2026) return;
+
+    if (isHoliday(date) || date.getDay() === 0 || date.getDay() === 6) {
+      substituteHolidayCount++;
+    }
+  });
+
+  return substituteHolidayCount;
+};
+
 export default function Calendar({ user, isLoading }: Props) {
   const calendarRef = useRef<FullCalendar>(null);
   const displayMonth = useCalendarStore((state) => state.displayMonth);
   const { updateUser } = useUserStore();
-  const { startDate, endDate } = useCalendarStore();
 
   useEffect(() => {
     updateUser(user);
@@ -82,34 +99,7 @@ export default function Calendar({ user, isLoading }: Props) {
     handleTouchEnd,
   } = useNavigateMonth(calendarRef);
 
-  let holidayCount = 0;
-
-  calendarEvents.forEach((item) => {
-    const date = new Date(item.start);
-
-    if (date.getFullYear() > 2026) return;
-
-    if (isHoliday(date)) {
-      holidayCount++;
-    }
-  });
-
-  const countWeekend = (startDate: string, endDate: string) => {
-    let weekendCount = 0;
-    const current = new Date(startDate);
-
-    while (current < new Date(endDate)) {
-      if (current.getDay() === 0 || current.getDay() === 6) {
-        weekendCount++;
-      }
-
-      current.setDate(current.getDate() + 1);
-    }
-
-    return weekendCount;
-  };
-
-  const totalWeekends = countWeekend(startDate, endDate) + holidayCount;
+  const totalSubstituteHolidays = getTotalSubstituteHolidays(calendarEvents);
 
   return (
     <>
@@ -126,7 +116,7 @@ export default function Calendar({ user, isLoading }: Props) {
         {user && (
           <div className="flex pb-1 justify-end">
             <p className="text-sm font-bold">
-              {displayMonth}월 대체 휴무 수: {totalWeekends}
+              {displayMonth}월 대체 휴무 수: {totalSubstituteHolidays}
             </p>
           </div>
         )}
