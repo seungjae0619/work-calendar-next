@@ -71,7 +71,7 @@ const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
   calendarEvents.forEach((item) => {
     const date = new Date(item.start);
 
-    // kr-holidays 라이브러리가 2027년 공휴일이 아직 없어서 에러 방지를 위한 if문
+    // kr-holidays 라이브러리가 2027년 공휴일이 아직 업데이트 되지 않아 에러 방지를 위한 if문
     if (date.getFullYear() > 2026) return;
 
     if (isHoliday(date) || date.getDay() === 0 || date.getDay() === 6) {
