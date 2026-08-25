@@ -1,84 +1,131 @@
-import FullCalendar from "@fullcalendar/react";
-import { useRef, useState } from "react";
-import { useShift } from "../../../hooks/useShift";
-import { toCalendarEvents } from "@/utils/eventFilter";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { animate, PanInfo, useMotionValue } from "framer-motion";
 import useCalendarStore from "@/store/calendar";
+import { Direction } from "../types/calendar";
 
-const SLIDE_ANIMATION_MS = 250;
+const SNAP_DURATION = 0.28;
+const PEEK = 0;
+const GAP = 0;
+const DISTANCE_RATIO_THRESHOLD = 0.22;
+const VELOCITY_THRESHOLD = 500;
 
-export const useNavigateMonth = (
-  calendarRef: React.RefObject<FullCalendar | null>,
-) => {
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-    null,
-  );
+const startOfMonth = (year: number, month: number) => new Date(year, month, 1);
+const addMonths = (date: Date, diff: number) =>
+  new Date(date.getFullYear(), date.getMonth() + diff, 1);
+const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+export const useMonthCarousel = () => {
+  const [centerDate, setCenterDate] = useState(() => {
+    const now = new Date();
+    return startOfMonth(now.getFullYear(), now.getMonth());
+  });
   const [isAnimating, setIsAnimating] = useState(false);
-  const [showEvents, setShowEvents] = useState(true);
+  const [panelWidth, setPanelWidth] = useState(0);
 
-  const { startDate, endDate, displayYear, displayMonth } = useCalendarStore();
-  const shift = useShift(startDate, endDate);
-  const touchStartX = useRef<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
 
-  const navigateMonth = (direction: "left" | "right") => {
-    if (isAnimating) return;
-    const api = calendarRef.current?.getApi();
+  const { setDisplayDate, updateDate, updateCurrentDate } = useCalendarStore();
 
-    setShowEvents(false);
-    setSlideDirection(direction);
-    setIsAnimating(true);
+  const step = panelWidth + GAP;
+  const baseX = -step + PEEK;
 
-    setTimeout(() => {
-      if (direction === "right") api?.next();
-      else api?.prev();
+  useEffect(() => {
+    setDisplayDate(centerDate.getFullYear(), centerDate.getMonth() + 1);
+    updateDate(formatDate(centerDate), formatDate(addMonths(centerDate, 1)));
+    updateCurrentDate(formatDate(centerDate));
+  }, [centerDate, setDisplayDate, updateDate, updateCurrentDate]);
 
-      setSlideDirection(null);
-      setIsAnimating(false);
-      setShowEvents(true);
-    }, SLIDE_ANIMATION_MS);
-  };
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+    const measure = () => setPanelWidth(el.offsetWidth - PEEK * 2);
+    measure();
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) < 50) return;
-    navigateMonth(diff > 0 ? "right" : "left");
-  };
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
-  const calendarEvents = showEvents
-    ? toCalendarEvents(shift, displayYear, displayMonth)
-    : [];
+  useEffect(() => {
+    if (!isAnimating) x.set(baseX);
+    // panelWidth(=baseX)가 바뀔 때(마운트, 리사이즈)만 위치를 다시 맞춘다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseX]);
+
+  const commit = useCallback(
+    (direction: 1 | -1 | 0) => {
+      setIsAnimating(true);
+      animate(x, baseX - direction * step, {
+        duration: SNAP_DURATION,
+        ease: "easeOut",
+        onComplete: () => {
+          x.set(baseX);
+          if (direction !== 0) {
+            setCenterDate((prev) => addMonths(prev, direction));
+          }
+          setIsAnimating(false);
+        },
+      });
+    },
+    [baseX, step, x],
+  );
+
+  const handleDragEnd = useCallback(
+    (_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
+      if (!panelWidth) return;
+
+      const offset = x.get() - baseX;
+      const passedDistance =
+        Math.abs(offset) / panelWidth > DISTANCE_RATIO_THRESHOLD;
+      const passedVelocity = Math.abs(info.velocity.x) > VELOCITY_THRESHOLD;
+      const passed = passedDistance || passedVelocity;
+
+      if (offset < 0 && passed) commit(1);
+      else if (offset > 0 && passed) commit(-1);
+      else commit(0);
+    },
+    [baseX, commit, panelWidth, x],
+  );
+
+  const navigateMonth = useCallback(
+    (direction: Direction) => {
+      if (isAnimating) return;
+      commit(direction === "right" ? 1 : -1);
+    },
+    [commit, isAnimating],
+  );
+
+  const goToMonth = useCallback(
+    (year: number, month: number) => {
+      if (isAnimating) return;
+      setCenterDate(startOfMonth(year, month - 1));
+    },
+    [isAnimating],
+  );
+
+  const goToToday = useCallback(() => {
+    const now = new Date();
+    goToMonth(now.getFullYear(), now.getMonth() + 1);
+  }, [goToMonth]);
+
+  const prevDate = useMemo(() => addMonths(centerDate, -1), [centerDate]);
+  const nextDate = useMemo(() => addMonths(centerDate, 1), [centerDate]);
 
   return {
-    slideDirection,
-    calendarEvents,
+    centerDate,
+    prevDate,
+    nextDate,
+    containerRef,
+    x,
+    panelWidth,
+    gap: GAP,
+    dragConstraints: { left: baseX - step, right: baseX + step },
+    isDragEnabled: !isAnimating && panelWidth > 0,
+    handleDragEnd,
     navigateMonth,
-    handleTouchStart,
-    handleTouchEnd,
+    goToMonth,
+    goToToday,
   };
-};
-
-export const useDialogEvent = (
-  calendarRef: React.RefObject<FullCalendar | null>,
-) => {
-  const handleDatePickerSelect = (year: number, month: number) => {
-    const api = calendarRef.current?.getApi();
-    if (!api) return;
-
-    const current = api.getDate();
-    const currentYear = current.getFullYear();
-    const currentMonth = current.getMonth() + 1;
-    const diff = (year - currentYear) * 12 + (month - currentMonth);
-
-    if (diff === 0) return;
-
-    for (let i = 0; i < Math.abs(diff); i++) {
-      if (diff > 0) api.next();
-      else api.prev();
-    }
-  };
-
-  return { handleDatePickerSelect };
 };

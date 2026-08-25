@@ -1,29 +1,21 @@
 "use client";
 
-import FullCalendar from "@fullcalendar/react";
 import KoLocal from "@fullcalendar/core/locales/ko";
-import { ReactNode, TouchEvent, useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { User } from "@supabase/supabase-js";
-import { useNavigateMonth } from "./hooks/useCalendarLogic";
+import { useMonthCarousel } from "./hooks/useCalendarLogic";
 import { isHoliday } from "@hyunbinseo/holidays-kr";
 import CalendarHeader from "./components/CalendarHeader";
 import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
 import useCalendarStore from "@/store/calendar";
-import { motion } from "framer-motion";
+import { useShift } from "@/hooks/useShift";
+import { toCalendarEvents } from "@/utils/eventFilter";
 import { CalendarEvent } from "./types/calendar";
 
-type Direction = "left" | "right";
 interface Props {
   user: User | null;
   isLoading: boolean;
-}
-
-interface SlideContainerProps {
-  slideDirection: Direction | null;
-  handleTouchStart: (e: TouchEvent<HTMLDivElement>) => void;
-  handleTouchEnd: (e: TouchEvent<HTMLDivElement>) => void;
-  children: ReactNode;
 }
 
 const Loading = ({ isLoading }: { isLoading: boolean }) => {
@@ -35,33 +27,6 @@ const Loading = ({ isLoading }: { isLoading: boolean }) => {
         </div>
       )}
     </>
-  );
-};
-
-const SlideContainer = ({
-  slideDirection,
-  handleTouchStart,
-  handleTouchEnd,
-  children,
-}: SlideContainerProps) => {
-  return (
-    <motion.div
-      initial={false}
-      animate={{
-        x:
-          slideDirection === "left" ? 60 : slideDirection === "right" ? -60 : 0,
-        opacity: slideDirection ? 0 : 1,
-      }}
-      transition={{
-        duration: slideDirection ? 0.25 : 0,
-        ease: "easeOut",
-      }}
-      className="w-full h-full md:h-130 md:w-200 md:mx-auto flex flex-col relative"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      {children}
-    </motion.div>
   );
 };
 
@@ -83,49 +48,63 @@ const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
 };
 
 export default function Calendar({ user, isLoading }: Props) {
-  const calendarRef = useRef<FullCalendar>(null);
-  const displayMonth = useCalendarStore((state) => state.displayMonth);
   const { updateUser } = useUserStore();
+  const { startDate, endDate, displayYear, displayMonth } = useCalendarStore();
 
   useEffect(() => {
     updateUser(user);
   }, [user, updateUser]);
 
   const {
-    slideDirection,
-    calendarEvents,
+    prevDate,
+    centerDate,
+    nextDate,
+    containerRef,
+    x,
+    panelWidth,
+    gap,
+    dragConstraints,
+    isDragEnabled,
+    handleDragEnd,
     navigateMonth,
-    handleTouchStart,
-    handleTouchEnd,
-  } = useNavigateMonth(calendarRef);
+    goToMonth,
+    goToToday,
+  } = useMonthCarousel();
 
+  const shift = useShift(startDate, endDate);
+  const calendarEvents = toCalendarEvents(shift, displayYear, displayMonth);
   const totalSubstituteHolidays = getTotalSubstituteHolidays(calendarEvents);
 
   return (
-    <>
-      <SlideContainer
-        slideDirection={slideDirection}
-        handleTouchStart={handleTouchStart}
-        handleTouchEnd={handleTouchEnd}
-      >
-        <Loading isLoading={isLoading} />
-        <CalendarHeader
-          calendarRef={calendarRef}
-          navigateMonth={navigateMonth}
-        />
-        {user && (
-          <div className="flex pb-1 justify-end">
-            <p className="text-sm font-bold">
-              {displayMonth}월 대체 휴무 수: {totalSubstituteHolidays}
-            </p>
-          </div>
-        )}
-        <ShiftCalendar
-          calendarEvents={calendarEvents}
-          KoLocal={KoLocal}
-          calendarRef={calendarRef}
-        />
-      </SlideContainer>
-    </>
+    <div className="w-full h-full md:h-auto md:w-200 md:mx-auto flex flex-col relative">
+      <Loading isLoading={isLoading} />
+      <CalendarHeader
+        displayYear={displayYear}
+        displayMonth={displayMonth}
+        navigateMonth={navigateMonth}
+        onToday={goToToday}
+        onSelectMonth={goToMonth}
+      />
+      {user && (
+        <div className="flex pb-1 justify-end">
+          <p className="text-sm font-bold">
+            {displayMonth}월 대체 휴무 수: {totalSubstituteHolidays}
+          </p>
+        </div>
+      )}
+      <ShiftCalendar
+        prevDate={prevDate}
+        centerDate={centerDate}
+        nextDate={nextDate}
+        containerRef={containerRef}
+        x={x}
+        panelWidth={panelWidth}
+        gap={gap}
+        dragConstraints={dragConstraints}
+        isDragEnabled={isDragEnabled}
+        onDragEnd={handleDragEnd}
+        KoLocal={KoLocal}
+      />
+    </div>
   );
 }

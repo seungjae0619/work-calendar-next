@@ -42,7 +42,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col m-auto ">
         <ThemeProvider>
           <Providers>
-            <div className="flex flex-col w-screen h-screen md:h-auto">
+            <div className="flex flex-col w-screen min-h-screen md:h-auto">
               {children}
             </div>
           </Providers>

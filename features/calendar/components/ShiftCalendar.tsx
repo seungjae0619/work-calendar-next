@@ -1,96 +1,95 @@
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import {
-  getHolidayClassNames,
-  renderDayCell,
-  renderEventContent,
-} from "../components/CalendarRenderer";
-import { CalendarEvent } from "../types/calendar";
-import {
-  DatesSetArg,
-  EventClickArg,
-  LocaleInput,
-} from "@fullcalendar/core/index.js";
+"use client";
+
+import { motion, MotionValue, PanInfo } from "framer-motion";
 import { RefObject, useState } from "react";
-import useCalendarStore from "@/store/calendar";
+import { LocaleInput } from "@fullcalendar/core/index.js";
 import useUserStore from "@/store/user";
-import { useShift } from "@/hooks/useShift";
+import MonthPanel from "./MonthPanel";
 import CalendarDialog from "@/features/dialog/Dialog";
+import { ShiftEvent } from "../types/calendar";
 
 interface ShiftCalendarProps {
-  calendarEvents: CalendarEvent[];
+  prevDate: Date;
+  centerDate: Date;
+  nextDate: Date;
+  containerRef: RefObject<HTMLDivElement | null>;
+  x: MotionValue<number>;
+  panelWidth: number;
+  gap: number;
+  dragConstraints: { left: number; right: number };
+  isDragEnabled: boolean;
+  onDragEnd: (
+    event: PointerEvent | MouseEvent | TouchEvent,
+    info: PanInfo,
+  ) => void;
   KoLocal: LocaleInput;
-  calendarRef: RefObject<FullCalendar | null>;
-}
-
-interface ShiftEvent {
-  work_type: string;
-  date: string;
-  changed_work_type: string | null;
 }
 
 export default function ShiftCalendar({
-  calendarEvents,
+  prevDate,
+  centerDate,
+  nextDate,
+  containerRef,
+  x,
+  panelWidth,
+  gap,
+  dragConstraints,
+  isDragEnabled,
+  onDragEnd,
   KoLocal,
-  calendarRef,
 }: ShiftCalendarProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selected, setSelected] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<ShiftEvent | undefined>();
   const { user } = useUserStore();
-  const { startDate, endDate, updateDate, setDisplayDate, updateCurrentDate } =
-    useCalendarStore();
 
-  const shift = useShift(startDate, endDate);
-
-  const handleDatesSet = (info: DatesSetArg) => {
-    const year = info.view.currentStart.getFullYear();
-    const month = info.view.currentStart.getMonth();
-
-    setDisplayDate(year, month + 1);
-
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 1);
-    const format = (date: Date) => date.toISOString().split("T")[0];
-
-    updateDate(format(start), format(end));
-    updateCurrentDate(format(start));
-  };
-
-  const handleEventClick = (eventInfo: EventClickArg) => {
+  const handleEventClick = (shiftEvent: ShiftEvent) => {
     if (!user) {
       alert("로그인이 필요합니다.");
       return;
     }
-    const shiftData = shift.find((s) => s.date === eventInfo.event.startStr);
     setDialogOpen(true);
-    setSelectedEvent({
-      work_type: shiftData?.work_type || "",
-      date: eventInfo.event.startStr,
-      changed_work_type: shiftData?.changed_work_type || null,
-    });
-    setSelected(shiftData?.changed_work_type || "");
+    setSelectedEvent(shiftEvent);
+    setSelected(shiftEvent.changed_work_type || "");
   };
 
   return (
     <>
-      <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
-        events={calendarEvents}
-        height="100%"
-        contentHeight="auto"
-        locale={KoLocal}
-        fixedWeekCount={false}
-        ref={calendarRef}
-        headerToolbar={false}
-        eventContent={renderEventContent}
-        dayCellContent={renderDayCell}
-        eventClick={handleEventClick}
-        datesSet={handleDatesSet}
-        dayCellClassNames={getHolidayClassNames}
-      />
+      <div ref={containerRef} className="relative overflow-x-hidden">
+        {panelWidth > 0 && (
+          <motion.div
+            className="flex"
+            style={{ x, columnGap: gap }}
+            drag={isDragEnabled ? "x" : false}
+            dragConstraints={dragConstraints}
+            dragElastic={0.15}
+            dragMomentum={false}
+            onDragEnd={onDragEnd}
+          >
+            <MonthPanel
+              key={prevDate.getTime()}
+              date={prevDate}
+              width={panelWidth}
+              KoLocal={KoLocal}
+              onEventClick={handleEventClick}
+            />
+            <MonthPanel
+              key={centerDate.getTime()}
+              date={centerDate}
+              width={panelWidth}
+              KoLocal={KoLocal}
+              onEventClick={handleEventClick}
+            />
+            <MonthPanel
+              key={nextDate.getTime()}
+              date={nextDate}
+              width={panelWidth}
+              KoLocal={KoLocal}
+              onEventClick={handleEventClick}
+            />
+          </motion.div>
+        )}
+      </div>
       <CalendarDialog
         open={dialogOpen}
         selected={selected}

@@ -90,35 +90,8 @@
 .fc .fc-scrollgrid-section > td {
   border-color: var(--calendar-border) !important;
 }
-.fc-slide-left {
-  animation: slideLeft 0.25s ease-in-out;
-}
-.fc-slide-right {
-  animation: slideRight 0.25s ease-in-out;
-}
-
 @media (max-width: 700px) {
   .fc .fc-daygrid-day-number {
     font-size: 11px;
-  }
-}
-@keyframes slideRight {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-60px);
-    opacity: 0;
-  }
-}
-@keyframes slideLeft {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(60px);
-    opacity: 0;
   }
 }
