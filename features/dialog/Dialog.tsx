@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useEditShift } from "@/hooks/useEditShift";
+import { LOGIN_REQUIRED_MESSAGE } from "@/lib/api/shift";
 import { Event } from "@/types/shift";
 import DialogInfoHeader from "./components/DialogInfoHeader";
 import ShiftWorkTypes from "./components/ShiftWorkTypes";
+
+const DEFAULT_ERROR_MESSAGE = "근무 변경에 실패했습니다. 다시 시도해주세요.";
 
 interface Props {
   open: boolean;
@@ -23,9 +27,17 @@ export default function CalendarDialog({
   setSelected,
 }: Props) {
   const { mutate: updateShift } = useEditShift();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lastEventDate, setLastEventDate] = useState(selectedEvent?.date);
+
+  if (selectedEvent?.date !== lastEventDate) {
+    setLastEventDate(selectedEvent?.date);
+    setErrorMessage(null);
+  }
 
   const handleSubmit = () => {
     if (selected && selectedEvent?.date) {
+      setErrorMessage(null);
       updateShift(
         {
           date: selectedEvent.date,
@@ -35,6 +47,13 @@ export default function CalendarDialog({
           onSuccess: () => {
             setSelected("");
             onOpenChange(false);
+          },
+          onError: (error) => {
+            setErrorMessage(
+              error instanceof Error && error.message === LOGIN_REQUIRED_MESSAGE
+                ? error.message
+                : DEFAULT_ERROR_MESSAGE,
+            );
           },
         },
       );
@@ -51,6 +70,10 @@ export default function CalendarDialog({
         <DialogInfoHeader selectedEvent={selectedEvent} />
 
         <ShiftWorkTypes selected={selected} setSelected={setSelected} />
+
+        {errorMessage && (
+          <p className="text-red-400 font-bold text-sm">{errorMessage}</p>
+        )}
 
         <div className="flex justify-end">
           <Button

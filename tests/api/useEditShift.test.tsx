@@ -2,12 +2,16 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEditShift } from "@/hooks/useEditShift";
+import { LOGIN_REQUIRED_MESSAGE } from "@/lib/api/shift";
 import { supabase } from "@/lib/supabase/client";
 
 // supabase 모듈 전체를 mock
 jest.mock("@/lib/supabase/client.ts", () => ({
   supabase: {
     from: jest.fn(),
+    auth: {
+      getSession: jest.fn(),
+    },
   },
 }));
 
@@ -33,6 +37,9 @@ describe("useEditShift 단위 테스트", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (supabase.from as jest.Mock).mockReturnValue({ update: mockUpdate });
+    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+      data: { session: { access_token: "test-token" } },
+    });
   });
 
   it("성공 시 supabase update를 올바른 인자로 호출한다", async () => {
@@ -69,5 +76,25 @@ describe("useEditShift 단위 테스트", () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toEqual({ message: "Row not found" });
+  });
+
+  it("로그인하지 않은 상태면 supabase 호출 없이 실패한다", async () => {
+    (supabase.auth.getSession as jest.Mock).mockResolvedValue({
+      data: { session: null },
+    });
+
+    const { result } = renderHook(() => useEditShift(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.mutate({ date: "2026-04-15", changedWorkType: "야간" });
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect((result.current.error as Error).message).toBe(
+      LOGIN_REQUIRED_MESSAGE,
+    );
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
