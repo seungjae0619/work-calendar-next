@@ -2,29 +2,19 @@ import {
   DayCellContentArg,
   EventContentArg,
 } from "@fullcalendar/core/index.js";
-import { getHolidayNames, isHoliday } from "@hyunbinseo/holidays-kr";
+import { safeGetHolidayNames, safeIsHoliday } from "@/utils/holidays";
 import { getWorkTypeStyle } from "../constants";
 
 export const getHolidayClassNames = (arg: DayCellContentArg) => {
-  try {
-    const year = arg.date.getFullYear();
-    const month = String(arg.date.getMonth() + 1).padStart(2, "0");
-    const day = String(arg.date.getDate()).padStart(2, "0");
-    const kstDate = new Date(`${year}-${month}-${day}T00:00:00+09:00`);
-    return isHoliday(kstDate) ? ["fc-day-holiday"] : [];
-  } catch {
-    return [];
-  }
+  const year = arg.date.getFullYear();
+  const month = String(arg.date.getMonth() + 1).padStart(2, "0");
+  const day = String(arg.date.getDate()).padStart(2, "0");
+  const kstDate = new Date(`${year}-${month}-${day}T00:00:00+09:00`);
+  return safeIsHoliday(kstDate) ? ["fc-day-holiday"] : [];
 };
 
 export const renderDayCell = (info: DayCellContentArg) => {
-  const holidayNames: { holiday: readonly string[] | null } = { holiday: [] };
-
-  if (info.date.getFullYear() < 2027) {
-    holidayNames.holiday = getHolidayNames(info.date);
-  }
-
-  const holidayName = holidayNames.holiday?.[0];
+  const holidayName = safeGetHolidayNames(info.date)?.[0];
 
   return (
     <div className="flex justify-between items-center gap-1">

@@ -4,13 +4,13 @@ import KoLocal from "@fullcalendar/core/locales/ko";
 import { useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { useMonthCarousel } from "./hooks/useCalendarLogic";
-import { isHoliday } from "@hyunbinseo/holidays-kr";
 import CalendarHeader from "./components/CalendarHeader";
 import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
-import useCalendarStore from "@/store/calendar";
 import { useShift } from "@/hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
+import { getMonthQueryRange } from "@/utils/dateHelpers";
+import { safeIsHoliday } from "@/utils/holidays";
 import { CalendarEvent } from "./types/calendar";
 
 interface Props {
@@ -36,10 +36,7 @@ const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
   calendarEvents.forEach((item) => {
     const date = new Date(item.start);
 
-    // kr-holidays 라이브러리가 2027년 공휴일이 아직 업데이트 되지 않아 에러 방지를 위한 if문
-    if (date.getFullYear() > 2026) return;
-
-    if (isHoliday(date) || date.getDay() === 0 || date.getDay() === 6) {
+    if (safeIsHoliday(date) || date.getDay() === 0 || date.getDay() === 6) {
       substituteHolidayCount++;
     }
   });
@@ -49,7 +46,6 @@ const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
 
 export default function Calendar({ user, isLoading }: Props) {
   const { updateUser } = useUserStore();
-  const { startDate, endDate, displayYear, displayMonth } = useCalendarStore();
 
   useEffect(() => {
     updateUser(user);
@@ -70,6 +66,10 @@ export default function Calendar({ user, isLoading }: Props) {
     goToMonth,
     goToToday,
   } = useMonthCarousel();
+
+  const displayYear = centerDate.getFullYear();
+  const displayMonth = centerDate.getMonth() + 1;
+  const { startDate, endDate } = getMonthQueryRange(centerDate);
 
   const shift = useShift(startDate, endDate);
   const calendarEvents = toCalendarEvents(shift, displayYear, displayMonth);

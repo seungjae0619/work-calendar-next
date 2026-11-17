@@ -1,5 +1,10 @@
-export const getMonthRange = (year: number, month: number) => {
-  const startDate = new Date(year, month, 2).toISOString().split("T")[0];
-  const endDate = new Date(year, month + 1, 1).toISOString().split("T")[0];
-  return { startDate, endDate };
+const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+export const getMonthQueryRange = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  return {
+    startDate: formatDate(new Date(year, month, 1)),
+    endDate: formatDate(new Date(year, month + 1, 1)),
+  };
 };
