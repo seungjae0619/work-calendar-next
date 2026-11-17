@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { animate, PanInfo, useMotionValue } from "framer-motion";
-import useCalendarStore from "@/store/calendar";
 import { Direction } from "../types/calendar";
 
 const SNAP_DURATION = 0.28;
@@ -12,7 +11,6 @@ const VELOCITY_THRESHOLD = 500;
 const startOfMonth = (year: number, month: number) => new Date(year, month, 1);
 const addMonths = (date: Date, diff: number) =>
   new Date(date.getFullYear(), date.getMonth() + diff, 1);
-const formatDate = (date: Date) => date.toISOString().split("T")[0];
 
 export const useMonthCarousel = () => {
   const [centerDate, setCenterDate] = useState(() => {
@@ -25,16 +23,8 @@ export const useMonthCarousel = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
 
-  const { setDisplayDate, updateDate, updateCurrentDate } = useCalendarStore();
-
   const step = panelWidth + GAP;
   const baseX = -step + PEEK;
-
-  useEffect(() => {
-    setDisplayDate(centerDate.getFullYear(), centerDate.getMonth() + 1);
-    updateDate(formatDate(centerDate), formatDate(addMonths(centerDate, 1)));
-    updateCurrentDate(formatDate(centerDate));
-  }, [centerDate, setDisplayDate, updateDate, updateCurrentDate]);
 
   useEffect(() => {
     const el = containerRef.current;

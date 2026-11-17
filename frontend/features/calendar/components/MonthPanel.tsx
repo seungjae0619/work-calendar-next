@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { EventClickArg, LocaleInput } from "@fullcalendar/core/index.js";
 import { useShift } from "@/hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
+import { getMonthQueryRange } from "@/utils/dateHelpers";
 import {
   getHolidayClassNames,
   renderDayCell,
@@ -20,8 +21,6 @@ interface MonthPanelProps {
   onEventClick: (event: ShiftEvent) => void;
 }
 
-const formatDate = (date: Date) => date.toISOString().split("T")[0];
-
 export default function MonthPanel({
   date,
   width,
@@ -31,8 +30,7 @@ export default function MonthPanel({
   const year = date.getFullYear();
   const month = date.getMonth();
 
-  const startDate = formatDate(new Date(year, month, 1));
-  const endDate = formatDate(new Date(year, month + 1, 1));
+  const { startDate, endDate } = getMonthQueryRange(date);
 
   const shift = useShift(startDate, endDate);
   const calendarEvents = toCalendarEvents(shift, year, month + 1);

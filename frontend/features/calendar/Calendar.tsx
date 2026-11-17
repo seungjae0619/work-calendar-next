@@ -8,9 +8,9 @@ import { isHoliday } from "@hyunbinseo/holidays-kr";
 import CalendarHeader from "./components/CalendarHeader";
 import ShiftCalendar from "./components/ShiftCalendar";
 import useUserStore from "@/store/user";
-import useCalendarStore from "@/store/calendar";
 import { useShift } from "@/hooks/useShift";
 import { toCalendarEvents } from "@/utils/eventFilter";
+import { getMonthQueryRange } from "@/utils/dateHelpers";
 import { CalendarEvent } from "./types/calendar";
 
 interface Props {
@@ -49,7 +49,6 @@ const getTotalSubstituteHolidays = (calendarEvents: CalendarEvent[]) => {
 
 export default function Calendar({ user, isLoading }: Props) {
   const { updateUser } = useUserStore();
-  const { startDate, endDate, displayYear, displayMonth } = useCalendarStore();
 
   useEffect(() => {
     updateUser(user);
@@ -70,6 +69,10 @@ export default function Calendar({ user, isLoading }: Props) {
     goToMonth,
     goToToday,
   } = useMonthCarousel();
+
+  const displayYear = centerDate.getFullYear();
+  const displayMonth = centerDate.getMonth() + 1;
+  const { startDate, endDate } = getMonthQueryRange(centerDate);
 
   const shift = useShift(startDate, endDate);
   const calendarEvents = toCalendarEvents(shift, displayYear, displayMonth);
