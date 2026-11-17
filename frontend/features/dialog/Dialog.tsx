@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useEditShift } from "@/hooks/useEditShift";
 import { LOGIN_REQUIRED_MESSAGE } from "@/lib/api/shift";
@@ -26,7 +30,7 @@ export default function CalendarDialog({
   selected,
   setSelected,
 }: Props) {
-  const { mutate: updateShift } = useEditShift();
+  const { mutate: updateShift, isPending } = useEditShift();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastEventDate, setLastEventDate] = useState(selectedEvent?.date);
 
@@ -66,24 +70,34 @@ export default function CalendarDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-500 border-gray-500 w-80 md:w-80">
+      <DialogContent>
         <DialogInfoHeader selectedEvent={selectedEvent} />
 
         <ShiftWorkTypes selected={selected} setSelected={setSelected} />
 
         {errorMessage && (
-          <p className="text-red-400 font-bold text-sm">{errorMessage}</p>
+          <p className="-mt-2 px-1 text-[14px] font-medium text-danger">
+            {errorMessage}
+          </p>
         )}
 
-        <div className="flex justify-end">
+        <DialogFooter>
           <Button
-            className="w-12.5 bg-gray-800 text-white hover:bg-gray-600"
-            onClick={handleSubmit}
-            disabled={isSubmitDisabled}
+            variant="weak"
+            size="lg"
+            onClick={() => onOpenChange(false)}
           >
-            변경
+            닫기
           </Button>
-        </div>
+          <Button
+            size="lg"
+            className="flex-[2]!"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled || isPending}
+          >
+            {isPending ? "변경 중..." : "변경하기"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

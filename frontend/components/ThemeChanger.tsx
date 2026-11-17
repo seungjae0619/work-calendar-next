@@ -8,6 +8,9 @@ const emptySubscribe = () => () => {};
 const getClientSnapshot = () => true;
 const getServerSnapshot = () => false;
 
+const buttonClassName =
+  "flex size-9 items-center justify-center rounded-full text-sub transition-[background-color,transform] hover:bg-surface-muted active:scale-90";
+
 export function ThemeChanger() {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useSyncExternalStore(
@@ -18,11 +21,7 @@ export function ThemeChanger() {
 
   if (!mounted) {
     return (
-      <button
-        type="button"
-        className="p-1 rounded-full cursor-pointer"
-        aria-label="테마 변경"
-      />
+      <button type="button" className={buttonClassName} aria-label="테마 변경" />
     );
   }
 
@@ -32,10 +31,10 @@ export function ThemeChanger() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="p-1 rounded-full cursor-pointer"
+      className={buttonClassName}
       aria-label="테마 변경"
     >
-      {isDark ? <Moon /> : <Sun />}
+      {isDark ? <Moon className="size-5" /> : <Sun className="size-5" />}
     </button>
   );
 }

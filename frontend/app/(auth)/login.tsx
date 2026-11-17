@@ -32,8 +32,9 @@ export default function Login({ user }: { user: User | null }) {
   return (
     <div>
       <Button
+        size="sm"
+        variant={user ? "weak" : "secondary"}
         onClick={() => (user ? onLogout() : setIsOpen(true))}
-        className="bg-gray-700 text-white hover:bg-gray-600"
       >
         {user ? "로그아웃" : "로그인"}
       </Button>

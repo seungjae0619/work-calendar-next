@@ -1,18 +1,7 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "../style/globals.css";
 import Providers from "../providers/react-query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "지하철 근무표",
@@ -28,23 +17,31 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f4f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#17171c" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col m-auto ">
+    <html lang="ko" suppressHydrationWarning className="h-full antialiased">
+      <head>
+        <link
+          rel="stylesheet"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-background text-strong">
         <ThemeProvider>
           <Providers>
-            <div className="flex flex-col w-screen min-h-screen md:h-auto">
-              {children}
-            </div>
+            <div className="flex flex-col w-full min-h-screen">{children}</div>
           </Providers>
         </ThemeProvider>
       </body>

@@ -1,7 +1,12 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ChangeEvent, useState } from "react";
 import LoginInput from "@/components/LoginInput";
 
@@ -65,13 +70,11 @@ export default function LoginDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-500 border-gray-500 w-80">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            <span className="text-white">관리자 로그인</span>
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            로그인 다이얼로그
+          <DialogTitle>관리자 로그인</DialogTitle>
+          <DialogDescription>
+            근무를 변경하려면 로그인이 필요해요
           </DialogDescription>
         </DialogHeader>
 
