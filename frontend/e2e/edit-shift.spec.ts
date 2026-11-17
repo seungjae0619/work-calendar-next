@@ -4,6 +4,11 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 const EMAIL = process.env.E2E_EMAIL;
 const PASSWORD = process.env.E2E_PASSWORD;
 const WORK_TYPES = ["주", "야", "휴"] as const;
+const WORK_TYPE_LABELS: Record<string, string> = {
+  주: "주간",
+  야: "야간",
+  휴: "휴무",
+};
 
 const yearMonth = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Asia/Seoul",
@@ -90,9 +95,11 @@ test.describe("근무 변경", () => {
     await event.click();
     const shiftDialog = page.getByRole("dialog");
     await expect(shiftDialog).toContainText(TARGET_DATE);
-    await expect(shiftDialog).toContainText(`본근무 : ${original.work_type}`);
+    await expect(shiftDialog).toContainText(
+      `본근무${WORK_TYPE_LABELS[original.work_type]}`,
+    );
 
-    await shiftDialog.getByRole("button", { name: nextType, exact: true }).click();
+    await shiftDialog.getByRole("radio", { name: nextType, exact: true }).click();
     await shiftDialog.getByRole("button", { name: "변경" }).click();
     await expect(shiftDialog).toBeHidden();
 

@@ -7,19 +7,17 @@ export default async function Home() {
   const { user } = await authServerService.getUser();
 
   return (
-    <>
-      <div className="md:w-200 mb-1 flex md:mx-auto px-3 md:px-0 py-3">
-        <header className="w-full flex justify-between items-center">
-          <h2 className="text-lg font-bold md:text-2xl ">근무표</h2>
-          <div className="flex items-center">
-            <ThemeChanger />
-            <Login user={user} />
-          </div>
-        </header>
-      </div>
-      <main className="flex-1 p-2 md:flex-none">
+    <div className="w-full max-w-[640px] mx-auto flex flex-col flex-1">
+      <header className="sticky top-0 z-10 flex items-center justify-between h-14 px-5 bg-background/90 backdrop-blur-md">
+        <h1 className="text-[20px] font-bold text-strong">근무표</h1>
+        <div className="flex items-center gap-1">
+          <ThemeChanger />
+          <Login user={user} />
+        </div>
+      </header>
+      <main className="flex-1 px-4 pt-2 pb-10">
         <Calendar user={user} isLoading={false} />
       </main>
-    </>
+    </div>
   );
 }
