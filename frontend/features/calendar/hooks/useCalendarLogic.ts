@@ -40,7 +40,6 @@ export const useMonthCarousel = () => {
 
   useEffect(() => {
     if (!isAnimating) x.set(baseX);
-    // panelWidth(=baseX)가 바뀔 때(마운트, 리사이즈)만 위치를 다시 맞춘다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseX]);
 
