@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A shift-schedule calendar app (지하철 근무표) for subway shift workers. It shows a monthly calendar of work types (주 day / 야 night / 휴 off), lets logged-in users change a day's work type, and counts substitute holidays (대체휴무) for the month. The UI text is Korean.
 
-All app code lives in `frontend/` (the repo root holds only this folder). Run every command from `frontend/`.
+All app code lives in `frontend/` (the repo root holds only this folder and `README.md`). Run every command from `frontend/`.
 
 ## Commands
 
@@ -24,7 +24,7 @@ Supabase needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (i
 
 ## Architecture
 
-Next.js 16 App Router, React 19, TypeScript, Tailwind v4. Path alias `@/*` maps to the `frontend/` root (configured in both `tsconfig.json` and `jest.config.ts`).
+Next.js 16 App Router, React 19, TypeScript, Tailwind v4. Path alias `@/*` maps to the `frontend/` root (configured in `tsconfig.json`).
 
 **Auth / Supabase**
 - `middleware.ts` refreshes the Supabase session cookie on every request.
