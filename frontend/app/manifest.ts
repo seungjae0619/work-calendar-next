@@ -7,8 +7,6 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "지하철 월 별 근무표",
     start_url: "/",
     display: "standalone",
-    // Match --background in style/globals.css so the launch splash blends
-    // into the first painted frame instead of flashing a different colour.
     background_color: "#f2f4f6",
     theme_color: "#f2f4f6",
     icons: [
