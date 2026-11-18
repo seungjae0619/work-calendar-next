@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -19,6 +20,7 @@ interface MonthPanelProps {
   width: number;
   KoLocal: LocaleInput;
   onEventClick: (event: ShiftEvent) => void;
+  onHeightChange: (time: number, height: number) => void;
 }
 
 export default function MonthPanel({
@@ -26,9 +28,24 @@ export default function MonthPanel({
   width,
   KoLocal,
   onEventClick,
+  onHeightChange,
 }: MonthPanelProps) {
   const year = date.getFullYear();
   const month = date.getMonth();
+  const time = date.getTime();
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+
+    const report = () => onHeightChange(time, el.offsetHeight);
+    report();
+
+    const observer = new ResizeObserver(report);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [time, onHeightChange]);
 
   const { startDate, endDate } = getMonthQueryRange(date);
 
@@ -45,13 +62,12 @@ export default function MonthPanel({
   };
 
   return (
-    <div style={{ width, flexShrink: 0 }}>
+    <div ref={panelRef} style={{ width, flexShrink: 0 }}>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         initialDate={date}
         events={calendarEvents}
-        height="100%"
         contentHeight="auto"
         locale={KoLocal}
         fixedWeekCount={false}
