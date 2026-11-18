@@ -53,4 +53,4 @@ Next.js 16 App Router, React 19, TypeScript, Tailwind v4. Path alias `@/*` maps 
 ## Gotchas
 
 - **Timezone**: dates are formatted with `toISOString().split("T")[0]`, which is UTC. In KST (UTC+9), `new Date(y, m, 1)` formats as the last day of the previous month, so the query range starts one day early. `toCalendarEvents` filters by `YYYY-MM` again to drop that day. Keep this in mind when touching date-range code.
-- **Holidays**: `@hyunbinseo/holidays-kr` only has data for 2018–2026 and throws a `RangeError` for other years. Always call it through `utils/holidays.ts` (`safeIsHoliday`, `safeGetHolidayNames`), never directly.
+- **Holidays**: `@hyunbinseo/holidays-kr` (v3.2027) bundles data for 2018–2027 and throws a `RangeError` for other years. Its plain `isHoliday`/`getHolidayNames` only cover the latest 2 years (2026–2027) and throw for older ones, so `utils/holidays.ts` uses the extended `isHolidayE`/`getHolidayNamesE`. Always call it through `utils/holidays.ts` (`safeIsHoliday`, `safeGetHolidayNames`), never directly.
