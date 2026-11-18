@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     title: "지하철 근무표",
     startupImage: appleStartupImages(),
   },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
