@@ -5,7 +5,6 @@ import {
   SPLASH_BACKGROUND,
   SPLASH_DEVICES,
   splashFileName,
-  type ColorScheme,
 } from "../lib/splashScreens.ts";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
@@ -16,8 +15,8 @@ const ICON_RADIUS = 27;
 const icon = await readFile(path.join(ROOT, "public/work-calendar-icon.png"));
 const iconSrc = `data:image/png;base64,${icon.toString("base64")}`;
 
-const html = (scheme: ColorScheme) => `<!doctype html>
-<html><body style="margin:0;height:100vh;display:grid;place-items:center;background:${SPLASH_BACKGROUND[scheme]}">
+const html = `<!doctype html>
+<html><body style="margin:0;height:100vh;display:grid;place-items:center;background:${SPLASH_BACKGROUND}">
 <img src="${iconSrc}" width="${ICON_SIZE}" height="${ICON_SIZE}" style="border-radius:${ICON_RADIUS}px">
 </body></html>`;
 
@@ -33,12 +32,10 @@ for (const device of SPLASH_DEVICES) {
     deviceScaleFactor: device.ratio,
   });
   const page = await context.newPage();
-  for (const scheme of ["light", "dark"] as const) {
-    await page.setContent(html(scheme));
-    const file = path.join(OUT_DIR, splashFileName(device, scheme));
-    await page.screenshot({ path: file });
-    console.log(path.relative(ROOT, file));
-  }
+  await page.setContent(html);
+  const file = path.join(OUT_DIR, splashFileName(device));
+  await page.screenshot({ path: file });
+  console.log(path.relative(ROOT, file));
   await context.close();
 }
 
