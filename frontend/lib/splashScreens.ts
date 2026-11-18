@@ -1,5 +1,3 @@
-export type ColorScheme = "light" | "dark";
-
 interface SplashDevice {
   width: number;
   height: number;
@@ -22,25 +20,19 @@ export const SPLASH_DEVICES: readonly SplashDevice[] = [
   { width: 320, height: 568, ratio: 2 },
 ];
 
-export const SPLASH_BACKGROUND: Record<ColorScheme, string> = {
-  light: "#f2f4f6",
-  dark: "#17171c",
-};
+export const SPLASH_BACKGROUND = "#f2f4f6";
 
-export const splashFileName = (device: SplashDevice, scheme: ColorScheme) =>
-  `apple-splash-${device.width * device.ratio}x${device.height * device.ratio}-${scheme}.png`;
+export const splashFileName = (device: SplashDevice) =>
+  `apple-splash-${device.width * device.ratio}x${device.height * device.ratio}.png`;
 
 export const appleStartupImages = () =>
-  SPLASH_DEVICES.flatMap((device) =>
-    (["light", "dark"] as const).map((scheme) => ({
-      url: `/splash/${splashFileName(device, scheme)}`,
-      media: [
-        "screen",
-        `(device-width: ${device.width}px)`,
-        `(device-height: ${device.height}px)`,
-        `(-webkit-device-pixel-ratio: ${device.ratio})`,
-        "(orientation: portrait)",
-        `(prefers-color-scheme: ${scheme})`,
-      ].join(" and "),
-    })),
-  );
+  SPLASH_DEVICES.map((device) => ({
+    url: `/splash/${splashFileName(device)}`,
+    media: [
+      "screen",
+      `(device-width: ${device.width}px)`,
+      `(device-height: ${device.height}px)`,
+      `(-webkit-device-pixel-ratio: ${device.ratio})`,
+      "(orientation: portrait)",
+    ].join(" and "),
+  }));

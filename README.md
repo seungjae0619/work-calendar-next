@@ -115,5 +115,5 @@ npm run test:e2e
 ## 참고
 
 - **공휴일 데이터**: `@hyunbinseo/holidays-kr`는 연도별 데이터가 패키지 버전에 포함되어 있어, 새해 공휴일이 발표되면 패키지를 업데이트해야 합니다. 직접 호출하지 말고 `utils/holidays.ts`의 `safeIsHoliday`, `safeGetHolidayNames`를 사용하세요 (데이터 범위 밖 연도는 에러 대신 `false`/`null`).
-- **iOS 시작 화면**: iOS는 PWA 실행 화면에 manifest 색상을 쓰지 않아 `public/splash/`의 기기별 시작 이미지(라이트/다크)를 사용합니다. 아이콘이나 배경색을 바꾸면 `node --experimental-strip-types scripts/generate-splash-screens.ts`로 다시 생성하세요.
+- **iOS 시작 화면**: iOS는 PWA 실행 화면에 manifest 색상을 쓰지 않아 `public/splash/`의 기기별 시작 이미지를 사용합니다. `prefers-color-scheme` 조건으로 라이트/다크를 나누면 iOS 27에서 시작 이미지가 표시되지 않아 라이트 이미지 한 세트만 둡니다. 아이콘이나 배경색을 바꾸면 `node --experimental-strip-types scripts/generate-splash-screens.ts`로 다시 생성하세요.
 - **디자인 토큰**: 색상은 `style/globals.css`의 CSS 변수(라이트/다크)로 정의되어 있습니다. 다크 모드를 위해 하드코딩한 색상 대신 토큰(`bg-surface`, `text-strong` 등)을 사용하세요.
