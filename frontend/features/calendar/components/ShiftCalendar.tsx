@@ -1,17 +1,19 @@
 "use client";
 
 import { motion, MotionValue, PanInfo } from "framer-motion";
-import { RefObject, useState } from "react";
+import { RefObject, useCallback, useState } from "react";
 import { LocaleInput } from "@fullcalendar/core/index.js";
 import useUserStore from "@/store/user";
 import MonthPanel from "./MonthPanel";
 import CalendarDialog from "@/features/dialog/Dialog";
 import { ShiftEvent } from "../types/calendar";
+import { SNAP_DURATION } from "../hooks/useCalendarLogic";
 
 interface ShiftCalendarProps {
   prevDate: Date;
   centerDate: Date;
   nextDate: Date;
+  targetDate: Date;
   containerRef: RefObject<HTMLDivElement | null>;
   x: MotionValue<number>;
   panelWidth: number;
@@ -29,6 +31,7 @@ export default function ShiftCalendar({
   prevDate,
   centerDate,
   nextDate,
+  targetDate,
   containerRef,
   x,
   panelWidth,
@@ -42,6 +45,15 @@ export default function ShiftCalendar({
   const [selected, setSelected] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<ShiftEvent | undefined>();
   const { user } = useUserStore();
+  const [panelHeights, setPanelHeights] = useState<Record<number, number>>({});
+
+  const handleHeightChange = useCallback((time: number, height: number) => {
+    setPanelHeights((prev) =>
+      prev[time] === height ? prev : { ...prev, [time]: height },
+    );
+  }, []);
+
+  const containerHeight = panelHeights[targetDate.getTime()];
 
   const handleEventClick = (shiftEvent: ShiftEvent) => {
     if (!user) {
@@ -55,10 +67,17 @@ export default function ShiftCalendar({
 
   return (
     <>
-      <div ref={containerRef} className="relative overflow-x-hidden">
+      <div
+        ref={containerRef}
+        className="relative overflow-hidden"
+        style={{
+          height: containerHeight ?? "auto",
+          transition: `height ${SNAP_DURATION}s ease-out`,
+        }}
+      >
         {panelWidth > 0 && (
           <motion.div
-            className="flex"
+            className="flex items-start"
             style={{ x, columnGap: gap }}
             drag={isDragEnabled ? "x" : false}
             dragConstraints={dragConstraints}
@@ -72,6 +91,7 @@ export default function ShiftCalendar({
               width={panelWidth}
               KoLocal={KoLocal}
               onEventClick={handleEventClick}
+              onHeightChange={handleHeightChange}
             />
             <MonthPanel
               key={centerDate.getTime()}
@@ -79,6 +99,7 @@ export default function ShiftCalendar({
               width={panelWidth}
               KoLocal={KoLocal}
               onEventClick={handleEventClick}
+              onHeightChange={handleHeightChange}
             />
             <MonthPanel
               key={nextDate.getTime()}
@@ -86,6 +107,7 @@ export default function ShiftCalendar({
               width={panelWidth}
               KoLocal={KoLocal}
               onEventClick={handleEventClick}
+              onHeightChange={handleHeightChange}
             />
           </motion.div>
         )}

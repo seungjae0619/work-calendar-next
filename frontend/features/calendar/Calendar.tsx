@@ -76,6 +76,7 @@ export default function Calendar({ user, isLoading }: Props) {
     prevDate,
     centerDate,
     nextDate,
+    targetDate,
     containerRef,
     x,
     panelWidth,
@@ -122,6 +123,7 @@ export default function Calendar({ user, isLoading }: Props) {
           prevDate={prevDate}
           centerDate={centerDate}
           nextDate={nextDate}
+          targetDate={targetDate}
           containerRef={containerRef}
           x={x}
           panelWidth={panelWidth}

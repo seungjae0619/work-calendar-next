@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { animate, PanInfo, useMotionValue } from "framer-motion";
 import { Direction } from "../types/calendar";
 
-const SNAP_DURATION = 0.28;
+export const SNAP_DURATION = 0.28;
 const PEEK = 0;
 const GAP = 0;
 const DISTANCE_RATIO_THRESHOLD = 0.22;
@@ -18,6 +18,7 @@ export const useMonthCarousel = () => {
     return startOfMonth(now.getFullYear(), now.getMonth());
   });
   const [isAnimating, setIsAnimating] = useState(false);
+  const [targetDirection, setTargetDirection] = useState<1 | -1 | 0>(0);
   const [panelWidth, setPanelWidth] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,7 @@ export const useMonthCarousel = () => {
   const commit = useCallback(
     (direction: 1 | -1 | 0) => {
       setIsAnimating(true);
+      setTargetDirection(direction);
       animate(x, baseX - direction * step, {
         duration: SNAP_DURATION,
         ease: "easeOut",
@@ -54,6 +56,7 @@ export const useMonthCarousel = () => {
           if (direction !== 0) {
             setCenterDate((prev) => addMonths(prev, direction));
           }
+          setTargetDirection(0);
           setIsAnimating(false);
         },
       });
@@ -101,11 +104,16 @@ export const useMonthCarousel = () => {
 
   const prevDate = useMemo(() => addMonths(centerDate, -1), [centerDate]);
   const nextDate = useMemo(() => addMonths(centerDate, 1), [centerDate]);
+  const targetDate = useMemo(
+    () => addMonths(centerDate, targetDirection),
+    [centerDate, targetDirection],
+  );
 
   return {
     centerDate,
     prevDate,
     nextDate,
+    targetDate,
     containerRef,
     x,
     panelWidth,
