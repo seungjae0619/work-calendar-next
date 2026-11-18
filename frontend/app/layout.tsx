@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "../style/globals.css";
 import Providers from "../providers/react-query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { appleStartupImages } from "@/lib/splashScreens";
 
 export const metadata: Metadata = {
   title: "지하철 근무표",
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "지하철 근무표",
+    startupImage: appleStartupImages(),
   },
 };
 
@@ -31,13 +34,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning className="h-full antialiased">
-      <head>
-        <link
-          rel="stylesheet"
-          crossOrigin="anonymous"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-background text-strong">
         <ThemeProvider>
           <Providers>
